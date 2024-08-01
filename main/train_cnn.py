@@ -17,6 +17,7 @@ if torch.backends.mps.is_available():
 else:
     NUM_ENV = 32
 LOG_DIR = "logs"
+ExperimentName = "snake_s1_len3"
 
 os.makedirs(LOG_DIR, exist_ok=True)
 
@@ -95,25 +96,25 @@ def main():
     os.makedirs(save_dir, exist_ok=True)
 
     checkpoint_interval = 15625 # checkpoint_interval * num_envs = total_steps_per_checkpoint
-    checkpoint_callback = CheckpointCallback(save_freq=checkpoint_interval, save_path=save_dir, name_prefix="ppo_snake")
+    checkpoint_callback = CheckpointCallback(save_freq=checkpoint_interval, save_path=save_dir, name_prefix=ExperimentName)
 
     # Writing the training logs from stdout to a file
     original_stdout = sys.stdout
     log_file_path = os.path.join(save_dir, "training_log.txt")
-    with open(log_file_path, 'w') as log_file:
-        sys.stdout = log_file
 
-        model.learn(
-            total_timesteps=int(100000000),
-            callback=[checkpoint_callback]
-        )
-        env.close()
+    model.learn(
+        total_timesteps=int(100000000),
+        callback=[checkpoint_callback],
+        tb_log_name=ExperimentName,
+        progress_bar=True
+    )
+    env.close()
 
     # Restore stdout
     sys.stdout = original_stdout
 
     # Save the final model
-    model.save(os.path.join(save_dir, "ppo_snake_final.zip"))
+    model.save(os.path.join(save_dir, ExperimentName + ".zip"))
 
 if __name__ == "__main__":
     main()

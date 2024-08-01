@@ -21,7 +21,7 @@ seed = random.randint(0, 1e9)
 print(f"Using seed = {seed} for testing.")
 
 if RENDER:
-    env = SnakeEnv(seed=seed, limit_step=False, silent_mode=False)
+    env = SnakeEnv(seed=seed, limit_step=False, silent_mode=True)
 else:
     env = SnakeEnv(seed=seed, limit_step=False, silent_mode=True)
 

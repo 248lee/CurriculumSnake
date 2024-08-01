@@ -6,7 +6,6 @@ import numpy as np
 
 os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = '1'
 import pygame
-from pygame import mixer
 
 class SnakeGame:
     def __init__(self, seed=0, board_size=12, silent_mode=True):
@@ -27,10 +26,10 @@ class SnakeGame:
             self.font = pygame.font.Font(None, 36)
 
             # Load sound effects
-            mixer.init()
-            self.sound_eat = mixer.Sound("sound/eat.wav")
-            self.sound_game_over = mixer.Sound("sound/game_over.wav")
-            self.sound_victory = mixer.Sound("sound/victory.wav")
+            # pygame.mixer.init()
+            # self.sound_eat = pygame.mixer.Sound("sound/eat.wav")
+            # self.sound_game_over = pygame.mixer.Sound("sound/game_over.wav")
+            # self.sound_victory = pygame.mixer.Sound("sound/victory.wav")
         else:
             self.screen = None
             self.font = None
@@ -72,11 +71,11 @@ class SnakeGame:
         if (row, col) == self.food: # If snake eats food, it won't pop the last cell. The food grid will be taken by snake later, no need to update board vacancy matrix.
             food_obtained = True
             self.score += 10 # Add 10 points to the score when food is eaten.
-            if not self.silent_mode:
-                self.sound_eat.play()
+            # if not self.silent_mode:
+            #     self.sound_eat.play()
         else:
             food_obtained = False
-            self.non_snake.add(self.snake.pop()) # Pop the last cell of the snake and add it to the non-snake set.
+        self.non_snake.add(self.snake.pop()) # Pop the last cell of the snake and add it to the non-snake set.
 
         # Check if snake collided with itself or the wall
         done = (
@@ -91,12 +90,12 @@ class SnakeGame:
             self.snake.insert(0, (row, col))
             self.non_snake.remove((row, col))
 
-        else: # If game is over and the game is not in silent mode, play game over sound effect.
-            if not self.silent_mode:
-                if len(self.snake) < self.grid_size:
-                    self.sound_game_over.play()
-                else:
-                    self.sound_victory.play()
+        # else: # If game is over and the game is not in silent mode, play game over sound effect.
+            # if not self.silent_mode:
+            #     if len(self.snake) < self.grid_size:
+            #         self.sound_game_over.play()
+            #     else:
+            #         self.sound_victory.play()
 
         # Add new food after snake movement completes.
         if food_obtained:
@@ -129,6 +128,7 @@ class SnakeGame:
         # Swich Case is supported in Python 3.10+
 
     def _generate_food(self):
+        random.seed()
         if len(self.non_snake) > 0:
             food = random.sample(self.non_snake, 1)[0]
         else: # If the snake occupies the entire board, no need to generate new food and just default to (0, 0).
@@ -290,7 +290,7 @@ if __name__ == "__main__":
                     for i in range(3, 0, -1):
                         game.screen.fill((0, 0, 0))
                         game.draw_countdown(i)
-                        game.sound_eat.play()
+                        # game.sound_eat.play()
                         pygame.time.wait(1000)
                     action = -1  # Reset action variable when starting a new game
                     game_state = "running"
@@ -300,7 +300,7 @@ if __name__ == "__main__":
                     for i in range(3, 0, -1):
                         game.screen.fill((0, 0, 0))
                         game.draw_countdown(i)
-                        game.sound_eat.play()
+                        # game.sound_eat.play()
                         pygame.time.wait(1000)
                     game.reset()
                     action = -1  # Reset action variable when starting a new game

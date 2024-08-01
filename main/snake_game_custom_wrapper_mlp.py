@@ -1,7 +1,7 @@
 import math
 import time # For debugging.
 
-import gym
+import gymnasium as gym
 import numpy as np
 
 from snake_game import SnakeGame
