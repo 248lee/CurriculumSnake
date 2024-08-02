@@ -9,7 +9,7 @@ from snake_game_custom_wrapper_cnn import SnakeEnv
 if torch.backends.mps.is_available():
     MODEL_PATH = r"trained_models_cnn_mps/ppo_snake_final"
 else:
-    MODEL_PATH = r"trained_models_cnn/ppo_snake_final"
+    MODEL_PATH = r"trained_models_cnn/snake_s1_len3_9000000_steps"
 
 NUM_EPISODE = 10
 
@@ -21,9 +21,9 @@ seed = random.randint(0, 1e9)
 print(f"Using seed = {seed} for testing.")
 
 if RENDER:
-    env = SnakeEnv(seed=seed, limit_step=False, silent_mode=True)
+    env = SnakeEnv(seed=seed, length = 16, limit_step=False, silent_mode=False)
 else:
-    env = SnakeEnv(seed=seed, limit_step=False, silent_mode=True)
+    env = SnakeEnv(seed=seed, length = 16, limit_step=False, silent_mode=True)
 
 # Load the trained model
 model = MaskablePPO.load(MODEL_PATH)
@@ -34,7 +34,7 @@ min_score = 1e9
 max_score = 0
 
 for episode in range(NUM_EPISODE):
-    obs = env.reset()
+    obs, _ = env.reset(9487, None)
     episode_reward = 0
     done = False
     
@@ -50,7 +50,7 @@ for episode in range(NUM_EPISODE):
         prev_mask = env.get_action_mask()
         prev_direction = env.game.direction
         num_step += 1
-        obs, reward, done, info = env.step(action)
+        obs, reward, done, _, info = env.step(action)
 
         if done:
             if info["snake_size"] == env.game.grid_size:
@@ -67,9 +67,7 @@ for episode in range(NUM_EPISODE):
             sum_step_reward += reward
             
         episode_reward += reward
-        if RENDER:
-            env.render()
-            time.sleep(FRAME_DELAY)
+        
 
     episode_score = env.game.score
     if episode_score < min_score:

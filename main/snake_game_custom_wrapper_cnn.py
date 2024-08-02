@@ -6,9 +6,9 @@ import numpy as np
 from snake_game import SnakeGame
 
 class SnakeEnv(gym.Env):
-    def __init__(self, seed=0, board_size=12, silent_mode=True, limit_step=True):
+    def __init__(self, length, seed=0, board_size=12, silent_mode=True, limit_step=True):
         super().__init__()
-        self.game = SnakeGame(seed=seed, board_size=board_size, silent_mode=silent_mode)
+        self.game = SnakeGame(length, seed=seed, board_size=board_size, silent_mode=silent_mode)
         self.game.reset()
 
         self.silent_mode = silent_mode
@@ -85,6 +85,12 @@ class SnakeEnv(gym.Env):
 
         # max_score: 72 + 14.1 = 86.1
         # min_score: -14.1
+
+        if not self.silent_mode:
+            self.render()
+            import time
+            FRAME_DELAY = 0.05
+            time.sleep(FRAME_DELAY)
 
         return obs, reward, self.done, False, info
     

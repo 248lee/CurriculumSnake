@@ -8,7 +8,7 @@ os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = '1'
 import pygame
 
 class SnakeGame:
-    def __init__(self, seed=0, board_size=12, silent_mode=True):
+    def __init__(self, length, seed=0, board_size=12, silent_mode=True):
         self.board_size = board_size
         self.grid_size = self.board_size ** 2
         self.cell_size = 40
@@ -41,13 +41,14 @@ class SnakeGame:
         self.score = 0
         self.food = None
         self.seed_value = seed
+        self.length = length
 
         random.seed(seed) # Set random seed.
         
         self.reset()
 
     def reset(self):
-        self.snake = [(self.board_size // 2 + i, self.board_size // 2) for i in range(1, -2, -1)] # Initialize the snake with three cells in (row, column) format.
+        self.snake = self._get_init_snake(self.length) # Initialize the snake with three cells in (row, column) format.
         self.non_snake = set([(row, col) for row in range(self.board_size) for col in range(self.board_size) if (row, col) not in self.snake]) # Initialize the non-snake cells.
         self.direction = "DOWN" # Snake starts downward in each round
         self.food = self._generate_food()
@@ -134,6 +135,36 @@ class SnakeGame:
         else: # If the snake occupies the entire board, no need to generate new food and just default to (0, 0).
             food = (0, 0)
         return food
+    
+    def _get_init_snake(self, length):
+        reversed_snake = [(0, 0)]
+        sector = 1
+        finish = False
+        for i in range(1, self.board_size // 2):
+            for j in range(1, i + 1):
+                top_element = reversed_snake[len(reversed_snake) - 1]
+                reversed_snake.append((top_element[0] + sector, top_element[1]))
+                if len(reversed_snake) >= length:
+                    finish = True
+                    break
+            if finish:
+                break
+
+            for j in range(1, i + 1):
+                top_element = reversed_snake[len(reversed_snake) - 1]
+                reversed_snake.append((top_element[0], top_element[1] + sector))
+                if len(reversed_snake) >= length:
+                    finish = True
+                    break
+            if finish:
+                break
+            sector *= -1
+        reversed_snake.reverse()
+        result_snake = reversed_snake  # rename the reversed snake
+
+        for i in range(len(result_snake)):
+            result_snake[i] = (result_snake[i][0] + self.board_size // 2, result_snake[i][1] + self.board_size // 2)  # shift the snake to the middle
+        return result_snake
     
     def draw_score(self):
         score_text = self.font.render(f"Score: {self.score}", True, (255, 255, 255))
@@ -241,7 +272,7 @@ class SnakeGame:
             pygame.draw.rect(self.screen, (0, color_list[i], 0),
                             (body_x, body_y, body_width, body_height), border_radius=body_radius)
             i += 1
-        pygame.draw.rect(self.screen, (255, 100, 100),
+        pygame.draw.rect(self.screen, (0, 100, 255),
                             (body_x, body_y, body_width, body_height), border_radius=body_radius)
         
 
