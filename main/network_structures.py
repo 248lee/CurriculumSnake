@@ -153,7 +153,7 @@ class DVNNetwork(nn.Module):
         super(DVNNetwork, self).__init__()
         # We assume CxHxW images (channels first)
         # Re-ordering will be done by pre-preprocessing or wrapper
-        self.feature_extractor = MaskablePPO.load("trained_models_cnn/" + old_model_name).policy
+        self.feature_extractor = MaskablePPO.load(old_model_name).policy
         self.batch_norm = nn.BatchNorm1d(features_dim)
         self.hidden = nn.Sequential(nn.Linear(features_dim, 256), nn.ReLU())
         self.value = nn.Linear(256, 1)

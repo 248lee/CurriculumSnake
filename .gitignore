@@ -1,6 +1,7 @@
 main/__pycache__
 main/logs
 main/trained_models_cnn
+main/trained_models_value
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

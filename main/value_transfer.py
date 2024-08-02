@@ -64,7 +64,7 @@ def main():
     # lr_schedule = linear_schedule(5.0e-5, 2.5e-6)
 
     model = DVN(
-        "snake_s1_len3_9000000_steps",
+        'trained_models_cnn/' + "snake_s1_len3_9000000_steps",
         "CnnPolicy",
         env,
         lr_schedule,

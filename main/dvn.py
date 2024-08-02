@@ -293,7 +293,7 @@ class DVN(OffPolicyAlgorithm):
             actions, buffer_actions = self._sample_action(learning_starts, action_noise, env.num_envs)
             global policy_network
             if policy_network == None:
-                policy_network = MaskablePPO.load('trained_models_cnn/' + self.policy_network_name)
+                policy_network = MaskablePPO.load(self.policy_network_name)
             policy_network.policy.set_training_mode(False)
             with th.no_grad():
                 obs_tensor = obs_as_tensor(self._last_obs, self.device)
