@@ -140,7 +140,7 @@ class SnakeGame:
         reversed_snake = [(0, 0)]
         sector = 1
         finish = False
-        for i in range(1, self.board_size // 2):
+        for i in range(1, self.board_size):
             for j in range(1, i + 1):
                 top_element = reversed_snake[len(reversed_snake) - 1]
                 reversed_snake.append((top_element[0] + sector, top_element[1]))

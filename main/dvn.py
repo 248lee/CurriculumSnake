@@ -214,6 +214,7 @@ class DVN(OffPolicyAlgorithm):
             # Sample replay buffer
             replay_data = self.replay_buffer.sample(batch_size, env=self._vec_normalize_env)  # type: ignore[union-attr]
 
+            value_optimizer.zero_grad()
             with th.no_grad():
                 # Compute the next V-values using the target network
                 next_v_values = value_network(replay_data.next_observations)
@@ -227,7 +228,6 @@ class DVN(OffPolicyAlgorithm):
             loss = F.smooth_l1_loss(current_v_values, target_v_values)
             log_losses.append(np.log(loss.item()))
 
-            value_optimizer.zero_grad()
             loss.backward()
             # Clip gradient norm
             th.nn.utils.clip_grad_norm_(value_network.parameters(), self.max_grad_norm)

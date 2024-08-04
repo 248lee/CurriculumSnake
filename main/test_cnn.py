@@ -9,7 +9,7 @@ from snake_game_custom_wrapper_cnn import SnakeEnv
 if torch.backends.mps.is_available():
     MODEL_PATH = r"trained_models_cnn_mps/ppo_snake_final"
 else:
-    MODEL_PATH = r"trained_models_cnn/snake_s1_len3_9000000_steps"
+    MODEL_PATH = r"trained_models_cnn/snake_s5_l2_len56_60000000_steps"
 
 NUM_EPISODE = 10
 
@@ -21,9 +21,9 @@ seed = random.randint(0, 1e9)
 print(f"Using seed = {seed} for testing.")
 
 if RENDER:
-    env = SnakeEnv(seed=seed, length = 16, limit_step=False, silent_mode=False)
+    env = SnakeEnv(seed=seed, length = 80, limit_step=True, silent_mode=False)
 else:
-    env = SnakeEnv(seed=seed, length = 16, limit_step=False, silent_mode=True)
+    env = SnakeEnv(seed=seed, length = 80, limit_step=True, silent_mode=True)
 
 # Load the trained model
 model = MaskablePPO.load(MODEL_PATH)
@@ -32,11 +32,11 @@ total_reward = 0
 total_score = 0
 min_score = 1e9
 max_score = 0
-
 for episode in range(NUM_EPISODE):
     obs, _ = env.reset(9487, None)
     episode_reward = 0
     done = False
+    truncate = False
     
     num_step = 0
     info = None
@@ -45,12 +45,12 @@ for episode in range(NUM_EPISODE):
 
     retry_limit = 9
     print(f"=================== Episode {episode + 1} ==================")
-    while not done:
+    while not (done or truncate):
         action, _ = model.predict(obs, action_masks=env.get_action_mask())
         prev_mask = env.get_action_mask()
         prev_direction = env.game.direction
         num_step += 1
-        obs, reward, done, _, info = env.step(action)
+        obs, reward, done, truncate, info = env.step(action)
 
         if done:
             if info["snake_size"] == env.game.grid_size:

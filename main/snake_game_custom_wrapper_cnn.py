@@ -42,6 +42,7 @@ class SnakeEnv(gym.Env):
 
         self.done = False
         self.reward_step_counter = 0
+        self.total_steps = 0
 
         obs = self._generate_observation()
         return obs, None
@@ -63,15 +64,21 @@ class SnakeEnv(gym.Env):
         if self.reward_step_counter > self.step_limit: # Step limit reached, game over.
             self.reward_step_counter = 0
             self.done = True
+
+        if self.total_steps > 5 * self.step_limit:
+            truncate = True
+        else:
+            truncate = False
         
         if self.done: # Snake bumps into wall or itself. Episode is over.
             # Game Over penalty is based on snake size.
             reward = - math.pow(self.max_growth, (self.grid_size - info["snake_size"]) / self.max_growth) # (-max_growth, -1)            
-            reward = reward * 0.1
+            reward = reward * 0.002  # original: * 0.1
             return obs, reward, self.done, False, info
           
         elif info["food_obtained"]: # Food eaten. Reward boost on snake size.
             reward = info["snake_size"] / self.grid_size
+            reward = reward * 10
             self.reward_step_counter = 0 # Reset reward step counter
         
         else:
@@ -92,7 +99,9 @@ class SnakeEnv(gym.Env):
             FRAME_DELAY = 0.05
             time.sleep(FRAME_DELAY)
 
-        return obs, reward, self.done, False, info
+        reward *= 0.01  # smallalize the reward
+        self.total_steps += 1
+        return obs, reward, self.done, truncate, info
     
     def render(self):
         self.game.render()

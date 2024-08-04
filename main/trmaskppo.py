@@ -412,7 +412,7 @@ class TRMaskablePPO(OnPolicyAlgorithm):
                     last_stage_values = dvn_model(rollout_data.observations)
                     delta_value = rollout_data.returns.unsqueeze(dim=-1) - last_stage_values
                     lambd = th.mean(delta_value) + 3e-3
-                    lambd = th.clip(lambd, min=-0.05, max=0) * (-1e2)
+                    lambd = th.clip(lambd, min=-0.1, max=0) * (-50)
                 transfer_regularization = lambd * F.mse_loss(prob, last_stage_prob)
                 lambds.append(lambd.item())
 
