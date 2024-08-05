@@ -21,9 +21,9 @@ seed = random.randint(0, 1e9)
 print(f"Using seed = {seed} for testing.")
 
 if RENDER:
-    env = SnakeEnv(seed=seed, length = 80, limit_step=True, silent_mode=False)
+    env = SnakeEnv(seed=seed, length = 72, limit_step=True, silent_mode=False)
 else:
-    env = SnakeEnv(seed=seed, length = 80, limit_step=True, silent_mode=True)
+    env = SnakeEnv(seed=seed, length = 72, limit_step=True, silent_mode=True)
 
 # Load the trained model
 model = MaskablePPO.load(MODEL_PATH)

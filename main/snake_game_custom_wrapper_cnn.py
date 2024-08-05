@@ -88,7 +88,10 @@ class SnakeEnv(gym.Env):
                 reward = 1 / info["snake_size"]
             else:
                 reward = - 1 / info["snake_size"]
-            reward = reward * 0.1
+            if info['snake_size'] >= 56:
+                reward = 0  # if the snake is long enough, it shouldn't get step reward
+            else:
+                reward = reward * 0.1
 
         # max_score: 72 + 14.1 = 86.1
         # min_score: -14.1
