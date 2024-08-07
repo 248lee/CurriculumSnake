@@ -137,33 +137,47 @@ class SnakeGame:
         return food
     
     def _get_init_snake(self, length):
-        reversed_snake = [(0, 0)]
-        sector = 1
+        # reversed_snake = [(0, 0)]
+        # sector = 1
+        # finish = False
+        # for i in range(1, self.board_size):
+        #     for j in range(1, i + 1):
+        #         top_element = reversed_snake[len(reversed_snake) - 1]
+        #         reversed_snake.append((top_element[0] + sector, top_element[1]))
+        #         if len(reversed_snake) >= length:
+        #             finish = True
+        #             break
+        #     if finish:
+        #         break
+
+        #     for j in range(1, i + 1):
+        #         top_element = reversed_snake[len(reversed_snake) - 1]
+        #         reversed_snake.append((top_element[0], top_element[1] + sector))
+        #         if len(reversed_snake) >= length:
+        #             finish = True
+        #             break
+        #     if finish:
+        #         break
+        #     sector *= -1
+        # reversed_snake.reverse()
+        # result_snake = reversed_snake  # rename the reversed snake
+
+        # for i in range(len(result_snake)):
+        #     result_snake[i] = (result_snake[i][0] + self.board_size // 2, result_snake[i][1] + self.board_size // 2)  # shift the snake to the middle
+        result_snake = []
         finish = False
-        for i in range(1, self.board_size):
-            for j in range(1, i + 1):
-                top_element = reversed_snake[len(reversed_snake) - 1]
-                reversed_snake.append((top_element[0] + sector, top_element[1]))
-                if len(reversed_snake) >= length:
+        for i in range(self.board_size):
+            for j in range(self.board_size - 2):
+                if i % 2 == 0:
+                    result_snake.append((i, self.board_size - 3 - j))
+                else:
+                    result_snake.append((i, j))
+                if len(result_snake) >= self.length:
                     finish = True
                     break
             if finish:
                 break
-
-            for j in range(1, i + 1):
-                top_element = reversed_snake[len(reversed_snake) - 1]
-                reversed_snake.append((top_element[0], top_element[1] + sector))
-                if len(reversed_snake) >= length:
-                    finish = True
-                    break
-            if finish:
-                break
-            sector *= -1
-        reversed_snake.reverse()
-        result_snake = reversed_snake  # rename the reversed snake
-
-        for i in range(len(result_snake)):
-            result_snake[i] = (result_snake[i][0] + self.board_size // 2, result_snake[i][1] + self.board_size // 2)  # shift the snake to the middle
+        
         return result_snake
     
     def draw_score(self):

@@ -17,7 +17,7 @@ if torch.backends.mps.is_available():
 else:
     NUM_ENV = 32
 LOG_DIR = "logs"
-ExperimentName = "snake_s6_l2_len72"
+ExperimentName = "snake_s7_l3_len100"
 
 os.makedirs(LOG_DIR, exist_ok=True)
 
@@ -36,7 +36,7 @@ def linear_schedule(initial_value, final_value=0.0):
 
 def make_env(seed=0):
     def _init():
-        env = SnakeEnv(seed=seed, length=72)
+        env = SnakeEnv(seed=seed, length=100)
         env = ActionMasker(env, SnakeEnv.get_action_mask)
         env = Monitor(env)
         env.seed(seed)
@@ -76,16 +76,18 @@ def main():
         lr_schedule = linear_schedule(2.5e-4, 2.5e-6)
         clip_range_schedule = linear_schedule(0.150, 0.025)
         import torch as th
+        from network_structures import CustomFeatureExtractorCNN
         policy_kwargs = dict(
-        activation_fn=th.nn.ReLU,
-        net_arch=dict(pi=[256, 128], vf=[128])
+            features_extractor_class=CustomFeatureExtractorCNN,
+            activation_fn=th.nn.ReLU,
+            net_arch=dict(pi=[512, 128], vf=[128])
         )
         # Instantiate a PPO agent using CUDA.
         model = TRMaskablePPO(
             "CnnPolicy",
             env,
-            old_model_name="trained_models_cnn/snake_s5_l2_len56_60000000_steps",
-            dvn_model_name="trained_models_value/DVN_transfer_s5to6_final.zip",
+            old_model_name="trained_models_cnn/snake_s6_l2_len72_82000000_steps",
+            dvn_model_name="trained_models_value/DVN_transfer_s6to7_final.zip",
             device="cuda",
             verbose=1,
             n_steps=2048,
