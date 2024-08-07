@@ -9,7 +9,7 @@ from snake_game_custom_wrapper_cnn import SnakeEnv
 if torch.backends.mps.is_available():
     MODEL_PATH = r"trained_models_cnn_mps/ppo_snake_final"
 else:
-    MODEL_PATH = r"trained_models_cnn/snake_s7_l3_len100_80000000_steps"
+    MODEL_PATH = r"trained_models_cnn/snake_s3_len32_60000000_steps"
 
 NUM_EPISODE = 10
 
@@ -21,9 +21,9 @@ seed = random.randint(0, 1e9)
 print(f"Using seed = {seed} for testing.")
 
 if RENDER:
-    env = SnakeEnv(seed=seed, length = 120, limit_step=True, silent_mode=False)
+    env = SnakeEnv(seed=seed, length = "random", limit_step=True, silent_mode=False)
 else:
-    env = SnakeEnv(seed=seed, length = 120, limit_step=True, silent_mode=True)
+    env = SnakeEnv(seed=seed, length = "random", limit_step=True, silent_mode=True)
 
 # Load the trained model
 model = MaskablePPO.load(MODEL_PATH)

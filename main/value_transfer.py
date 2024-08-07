@@ -44,7 +44,7 @@ def linear_schedule(initial_value, final_value=0.0):
 
 def make_env(seed=0):
     def _init():
-        env = SnakeEnv(seed=seed, length=100, silent_mode=True)
+        env = SnakeEnv(seed=seed, length="random", silent_mode=True)
         env = ActionMasker(env, SnakeEnv.get_action_mask)
         env = Monitor(env)
         env.seed(seed)
@@ -64,7 +64,7 @@ def main():
     # lr_schedule = linear_schedule(5.0e-5, 2.5e-6)
 
     model = DVN(
-        'trained_models_cnn/' + "snake_s6_l2_len72_82000000_steps",
+        'trained_models_cnn/' + "snake_s3_len32_60000000_steps",
         "CnnPolicy",
         env,
         lr_schedule,
