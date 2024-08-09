@@ -17,7 +17,7 @@ if torch.backends.mps.is_available():
 else:
     NUM_ENV = 32
 LOG_DIR = "logs"
-ExperimentName = "snake_s7_l3_len106_clip"
+ExperimentName = "snake_s7_l4_grow_g985"
 
 os.makedirs(LOG_DIR, exist_ok=True)
 
@@ -36,7 +36,7 @@ def linear_schedule(initial_value, final_value=0.0):
 
 def make_env(seed=0):
     def _init():
-        env = SnakeEnv(seed=seed, length=106)
+        env = SnakeEnv(seed=seed, length=80, is_grow=True)
         env = ActionMasker(env, SnakeEnv.get_action_mask)
         env = Monitor(env)
         env.seed(seed)
@@ -80,20 +80,20 @@ def main():
         policy_kwargs = dict(
             features_extractor_class=CustomFeatureExtractorCNN,
             activation_fn=th.nn.ReLU,
-            net_arch=dict(pi=[512, 128], vf=[128])
+            net_arch=dict(pi=[512, 256, 128], vf=[128, 32])
         )
         # Instantiate a PPO agent using CUDA.
         model = TRMaskablePPO(
             "CnnPolicy",
             env,
             old_model_name="trained_models_cnn/snake_s6_l3_len72_clip_84000000_steps",
-            dvn_model_name="trained_models_value/DVN_transfer_s6to7_final.zip",
+            dvn_model_name="trained_models_value/DVN_transfer_s6to7_g985_final.zip",
             device="cuda",
             verbose=1,
             n_steps=2048,
             batch_size=512,
             n_epochs=4,
-            gamma=0.985,
+            gamma=0.94,
             learning_rate=lr_schedule,
             clip_range=9487,
             tensorboard_log=LOG_DIR,

@@ -8,7 +8,7 @@ os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = '1'
 import pygame
 
 class SnakeGame:
-    def __init__(self, length, seed=0, board_size=12, silent_mode=True):
+    def __init__(self, length, is_grow, seed=0, board_size=12, silent_mode=True):
         self.board_size = board_size
         self.grid_size = self.board_size ** 2
         self.cell_size = 40
@@ -17,6 +17,7 @@ class SnakeGame:
         self.border_size = 20
         self.display_width = self.width + 2 * self.border_size
         self.display_height = self.height + 2 * self.border_size + 40
+        self.is_grow = is_grow
 
         self.silent_mode = silent_mode
         if not silent_mode:
@@ -83,8 +84,10 @@ class SnakeGame:
             #     self.sound_eat.play()
         else:
             food_obtained = False
-            self.non_snake.add(self.snake.pop()) # Pop the last cell of the snake and add it to the non-snake set.
-
+            if self.is_grow:
+                self.non_snake.add(self.snake.pop()) # Pop the last cell of the snake and add it to the non-snake set.
+        if not self.is_grow:
+            self.non_snake.add(self.snake.pop())
         # Check if snake collided with itself or the wall
         done = (
             (row, col) in self.snake

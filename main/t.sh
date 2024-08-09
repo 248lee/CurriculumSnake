@@ -1,0 +1,2 @@
+python value_transfer.py
+python train_cnn_nextstage_largernet3.py

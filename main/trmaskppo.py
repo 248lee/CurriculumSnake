@@ -332,6 +332,8 @@ class TRMaskablePPO(OnPolicyAlgorithm):
 
         # Switch to train mode (this affects batch norm / dropout)
         self.policy.set_training_mode(True)
+        old_model.policy.set_training_mode(False)
+        dvn_model.eval()
         # Update optimizer learning rate
         self._update_learning_rate(self.policy.optimizer)
         # Compute current clip range
@@ -373,6 +375,18 @@ class TRMaskablePPO(OnPolicyAlgorithm):
                 # ratio between old and new policy, should be one at the first iteration
                 ratio = th.exp(log_prob - rollout_data.old_log_prob)
 
+                # Old value regularization term
+                prob = self.policy.get_distribution(rollout_data.observations, rollout_data.action_masks).distribution.probs
+                with th.no_grad():
+                    last_stage_prob = old_model.policy.get_distribution(rollout_data.observations, rollout_data.action_masks).distribution.probs
+                    last_stage_values = dvn_model(rollout_data.observations)
+                    delta_value = rollout_data.returns.unsqueeze(dim=-1) - last_stage_values
+                    lambd = th.mean(delta_value) + 3e-3
+                    lambd = th.clip(lambd, min=-0.1, max=0) * (-50)
+                transfer_regularization = lambd * F.mse_loss(prob, last_stage_prob)
+                lambds.append(lambd.item())
+                clip_range = 0.008 + 0.06 * lambd.item()
+
                 # clipped surrogate loss
                 policy_loss_1 = advantages * ratio
                 policy_loss_2 = advantages * th.clamp(ratio, 1 - clip_range, 1 + clip_range)
@@ -404,17 +418,6 @@ class TRMaskablePPO(OnPolicyAlgorithm):
                     entropy_loss = -th.mean(entropy)
 
                 entropy_losses.append(entropy_loss.item())
-
-                # Old value regularization term
-                prob = self.policy.get_distribution(rollout_data.observations, rollout_data.action_masks).distribution.probs
-                with th.no_grad():
-                    last_stage_prob = old_model.policy.get_distribution(rollout_data.observations, rollout_data.action_masks).distribution.probs
-                    last_stage_values = dvn_model(rollout_data.observations)
-                    delta_value = rollout_data.returns.unsqueeze(dim=-1) - last_stage_values
-                    lambd = th.mean(delta_value) + 3e-3
-                    lambd = th.clip(lambd, min=-0.1, max=0) * (-50)
-                transfer_regularization = lambd * F.mse_loss(prob, last_stage_prob)
-                lambds.append(lambd.item())
 
                 loss = policy_loss + self.ent_coef * entropy_loss + self.vf_coef * value_loss
 
