@@ -5,15 +5,17 @@ import torch
 from sb3_contrib import MaskablePPO
 
 from snake_game_custom_wrapper_cnn import SnakeEnv
+import numpy as np
+import matplotlib.pyplot as plt
 
 if torch.backends.mps.is_available():
     MODEL_PATH = r"trained_models_cnn_mps/ppo_snake_final"
 else:
-    MODEL_PATH = r"trained_models_cnn/snake_s7_l4_grow_g985"
+    MODEL_PATH = r"trained_models_cnn/snake_s7_l4_grow_g985_160000000_steps"
 
-NUM_EPISODE = 100
+NUM_EPISODE = 1000
 
-RENDER = True
+RENDER = False
 FRAME_DELAY = 0.05 # 0.01 fast, 0.05 slow
 ROUND_DELAY = 5
 
@@ -21,9 +23,9 @@ seed = random.randint(0, 1e9)
 print(f"Using seed = {seed} for testing.")
 
 if RENDER:
-    env = SnakeEnv(seed=seed, length = 80, is_grow=True, limit_step=True, silent_mode=False)
+    env = SnakeEnv(seed=seed, length = 3, is_grow=True, limit_step=True, silent_mode=False)
 else:
-    env = SnakeEnv(seed=seed, length = 80, is_grow=True, limit_step=True, silent_mode=True)
+    env = SnakeEnv(seed=seed, length = 3, is_grow=True, limit_step=True, silent_mode=True)
 
 # Load the trained model
 model = MaskablePPO.load(MODEL_PATH)
@@ -32,6 +34,7 @@ total_reward = 0
 total_score = 0
 min_score = 1e9
 max_score = 0
+terminal_length_distrib = np.zeros(146)
 for episode in range(NUM_EPISODE):
     obs, _ = env.reset(9487, None)
     episode_reward = 0
@@ -77,6 +80,7 @@ for episode in range(NUM_EPISODE):
     
     snake_size = info["snake_size"] + 1
     print(f"Episode {episode + 1}: Reward Sum: {episode_reward:.4f}, Score: {episode_score}, Total Steps: {num_step}, Snake Size: {snake_size}")
+    terminal_length_distrib[snake_size] += 1
     total_reward += episode_reward
     total_score += env.game.score
     if RENDER:
@@ -85,3 +89,6 @@ for episode in range(NUM_EPISODE):
 env.close()
 print(f"=================== Summary ==================")
 print(f"Average Score: {total_score / NUM_EPISODE}, Min Score: {min_score}, Max Score: {max_score}, Average reward: {total_reward / NUM_EPISODE}")
+print(terminal_length_distrib)
+plt.bar(range(3, 146), terminal_length_distrib[3:146])
+plt.show()
