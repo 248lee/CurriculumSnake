@@ -17,7 +17,7 @@ if torch.backends.mps.is_available():
 else:
     NUM_ENV = 32
 LOG_DIR = "logs"
-ExperimentName = "snake_s7_l4_grow_g985"
+ExperimentName = "snake_BOSS"
 
 os.makedirs(LOG_DIR, exist_ok=True)
 
@@ -36,7 +36,7 @@ def linear_schedule(initial_value, final_value=0.0):
 
 def make_env(seed=0):
     def _init():
-        env = SnakeEnv(seed=seed, length=80, is_grow=True)
+        env = SnakeEnv(seed=seed, length="random", is_grow=True)
         env = ActionMasker(env, SnakeEnv.get_action_mask)
         env = Monitor(env)
         env.seed(seed)
@@ -83,15 +83,15 @@ def main():
             net_arch=dict(pi=[512, 256, 128], vf=[128, 32])
         )
         # Instantiate a PPO agent using CUDA.
-        delete_me = ['trained_models_cnn/snake_s5_l2_len56_60000000_steps', 'trained_models_cnn/snake_s6_l3_len72_clip_84000000_steps']
+        old_model_names = ['trained_models_cnn/snake_s5_l2_len56_60000000_steps', 'trained_models_cnn/snake_s6_l3_len72_clip_84000000_steps', 'trained_models_cnn/snake_s7_l4_grow_g985_160000000_steps']
         model = TRMaskablePPOMC(
             "CnnPolicy",
             env,
-            old_model_names=delete_me,
-            dvn_model_names=["trained_models_value/DVN_transfer_s5to6_final.zip", "trained_models_value/DVN_transfer_s6to7_g985_final.zip"],
+            old_model_names=old_model_names,
+            dvn_model_names=["trained_models_value/DVN_transfer_s5toBOSS_final.zip", "trained_models_value/DVN_transfer_s6toBOSS_final.zip", "trained_models_value/DVN_transfer_s7toBOSS_final.zip"],
             device="cuda",
             verbose=1,
-            n_steps=512,
+            n_steps=2048,
             batch_size=512,
             n_epochs=4,
             gamma=0.94,
@@ -116,7 +116,7 @@ def main():
     log_file_path = os.path.join(save_dir, "training_log.txt")
 
     model.learn(
-        total_timesteps=int(100000000),
+        total_timesteps=int(200000000),
         callback=[checkpoint_callback],
         tb_log_name=ExperimentName,
         progress_bar=True

@@ -54,7 +54,7 @@ class SnakeEnv(gym.Env):
         self.reward_step_counter += 1
 
         if info["snake_size"] == self.grid_size: # Snake fills up the entire board. Game over.
-            reward = self.max_growth * 0.1 # Victory reward
+            reward = 0.5
             self.done = True
             # if not self.silent_mode:
             #     self.game.sound_victory.play()
