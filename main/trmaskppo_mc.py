@@ -390,21 +390,19 @@ class TRMaskablePPOMC(OnPolicyAlgorithm):
                         last_stage_valueses.append(last_stage_values)
                     last_stage_valueses = th.concat(last_stage_valueses, dim=-1)  # shape: (batchsize, num_of_dvn_models)
                     max_last_stage_values, chosen_model_indices = th.max(last_stage_valueses, dim=-1)  # shapes: (batchsize)
-                    chosen_model_indices = chosen_model_indices.tolist()
 
-                    last_stage_probs = []
-                    for i, chosen_model_index in enumerate(chosen_model_indices):
-                        print(i)
-                        old_models[chosen_model_index].policy.set_training_mode(False)
-                        last_stage_prob = old_models[chosen_model_index].policy.get_distribution(rollout_data.observations[i:i+1], rollout_data.action_masks[i:i+1]).distribution.probs
-                            # shape: (1, action_num=4)
-                        last_stage_probs.append(last_stage_prob)
-                    last_stage_probs = th.concat(last_stage_probs, dim=0)  # shape: (batchsize, action_num=4)
+                    last_stage_probses = []
+                    for old_model in old_models:
+                        old_model.policy.set_training_mode(False)
+                        last_stage_probs = old_model.policy.get_distribution(rollout_data.observations, rollout_data.action_masks).distribution.probs
+                        last_stage_probses.append(last_stage_probs)
+                    last_stage_probses = th.stack(last_stage_probses, dim=0)  # shape: (batchsize, num_of_models, actions_num=4)
+                    chosen_last_stage_probs = last_stage_probses[chosen_model_indices, th.tensor(range(len(chosen_model_indices))), :]
 
                     delta_value = rollout_data.returns - max_last_stage_values
                     lambd = th.mean(delta_value) + 3e-3
                     lambd = th.clip(lambd, min=-0.1, max=0) * (-50)
-                transfer_regularization = lambd * F.mse_loss(probs, last_stage_probs)
+                transfer_regularization = lambd * F.mse_loss(probs, chosen_last_stage_probs)
                 lambds.append(lambd.item())
                 clip_range = 0.008 + 0.06 * lambd.item()
 

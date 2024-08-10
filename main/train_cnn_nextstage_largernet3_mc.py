@@ -91,7 +91,7 @@ def main():
             dvn_model_names=["trained_models_value/DVN_transfer_s5to6_final.zip", "trained_models_value/DVN_transfer_s6to7_g985_final.zip"],
             device="cuda",
             verbose=1,
-            n_steps=2048,
+            n_steps=512,
             batch_size=512,
             n_epochs=4,
             gamma=0.94,
