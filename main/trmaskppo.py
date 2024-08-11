@@ -385,7 +385,7 @@ class TRMaskablePPO(OnPolicyAlgorithm):
                     lambd = th.clip(lambd, min=-0.1, max=0) * (-50)
                 transfer_regularization = lambd * F.mse_loss(prob, last_stage_prob)
                 lambds.append(lambd.item())
-                clip_range = 0.008 + 0.06 * lambd.item()
+                clip_range = 0.008 + 0.03 * lambd.item()
 
                 # clipped surrogate loss
                 policy_loss_1 = advantages * ratio
@@ -419,7 +419,7 @@ class TRMaskablePPO(OnPolicyAlgorithm):
 
                 entropy_losses.append(entropy_loss.item())
 
-                loss = policy_loss + self.ent_coef * entropy_loss + self.vf_coef * value_loss
+                loss = policy_loss + self.ent_coef * entropy_loss + self.vf_coef * value_loss + transfer_regularization
 
                 transfer_regular_losses.append(transfer_regularization.item())
                 delta_values.append(th.mean(delta_value).item())

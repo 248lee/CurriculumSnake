@@ -17,7 +17,7 @@ if torch.backends.mps.is_available():
 else:
     NUM_ENV = 32
 LOG_DIR = "logs"
-ExperimentName = "snake_s7_l4_grow_g985"
+ExperimentName = "snake_BOSS_please_success"
 
 os.makedirs(LOG_DIR, exist_ok=True)
 
@@ -86,8 +86,8 @@ def main():
         model = TRMaskablePPO(
             "CnnPolicy",
             env,
-            old_model_name="trained_models_cnn/snake_s6_l3_len72_clip_84000000_steps",
-            dvn_model_name="trained_models_value/DVN_transfer_s6to7_g985_final.zip",
+            old_model_name="trained_models_cnn/snake_s7_l4_grow_g985_160000000_steps",
+            dvn_model_name="trained_models_value/DVN_transfer_s7toBOSS_final.zip",
             device="cuda",
             verbose=1,
             n_steps=2048,

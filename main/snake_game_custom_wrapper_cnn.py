@@ -6,7 +6,7 @@ import numpy as np
 from snake_game import SnakeGame
 
 class SnakeEnv(gym.Env):
-    def __init__(self, length, is_grow, seed=0, board_size=11, silent_mode=True, limit_step=True):
+    def __init__(self, length, is_grow, seed=0, board_size=12, silent_mode=True, limit_step=True):
         super().__init__()
         self.game = SnakeGame(length, is_grow, seed=seed, board_size=board_size, silent_mode=silent_mode)
         self.game.reset()
@@ -54,8 +54,8 @@ class SnakeEnv(gym.Env):
         self.reward_step_counter += 1
 
         if info["snake_size"] == self.grid_size: # Snake fills up the entire board. Game over.
-            reward = self.max_growth * 0.1
-            # reward = 0.5
+            # reward = self.max_growth * 0.1
+            reward = 0.5
             self.done = True
             # if not self.silent_mode:
             #     self.game.sound_victory.play()
