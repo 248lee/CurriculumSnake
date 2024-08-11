@@ -6,7 +6,7 @@ from snake_game_custom_wrapper_cnn import SnakeEnv
 FRAME_DELAY = 0.01 # 0.01 fast, 0.05 slow
 ROUND_DELAY = 5
 
-BOARD_SIZE = 12
+BOARD_SIZE = 11
 
 def generate_hamiltonian_cycle(board_size):
     path = [(0, c) for c in range(board_size)]
@@ -43,7 +43,8 @@ def main():
     seed = random.randint(0, 1e9)
     print(f"Using seed = {seed} for testing.")
 
-    env = SnakeEnv(silent_mode=False, seed=seed, board_size=BOARD_SIZE)
+    env = SnakeEnv(silent_mode=False, length=80, is_grow=True, seed=seed, board_size=BOARD_SIZE)
+    env.reset(None, None)
 
     cycle = generate_hamiltonian_cycle(env.game.board_size)
     cycle_len = len(cycle)
