@@ -24,6 +24,7 @@ from stable_baselines3.common.utils import obs_as_tensor
 SelfDQN = TypeVar("SelfDQN", bound="DQN")
 
 value_network = None
+value_network_target = None
 value_optimizer = None
 policy_network = None
 
@@ -150,6 +151,7 @@ class DVN(OffPolicyAlgorithm):
         self.max_grad_norm = max_grad_norm
         # "epsilon" for the epsilon-greedy exploration
         self.exploration_rate = 0.0
+        self.training_steps = 0
 
         if _init_setup_model:
             self._setup_model()
@@ -202,25 +204,30 @@ class DVN(OffPolicyAlgorithm):
     def train(self, gradient_steps: int, batch_size: int = 100) -> None:
         global value_network
         global value_optimizer
+        global value_network_target
         if value_network == None:
             value_network = DVNNetwork(self.policy_network_name).to('cuda')
+            value_network_target = DVNNetwork(self.policy_network_name).to('cuda')
             value_optimizer = th.optim.Adam(value_network.parameters())
         value_network.train()
         # Update learning rate according to schedule
         self._update_learning_rate(value_optimizer)
 
         log_losses = []
+        if self.training_steps % 1000 == 0:
+            value_network_target.load_state_dict(value_network.state_dict())
+        self.training_steps += 1
         for _ in range(gradient_steps):
-            if self._current_progress_remaining < 0.7:
-                value_network.set_unfreeze()
-                
+            # if self._current_progress_remaining < 0.7:
+            #     value_network.set_unfreeze()
+
             # Sample replay buffer
             replay_data = self.replay_buffer.sample(batch_size, env=self._vec_normalize_env)  # type: ignore[union-attr]
 
             value_optimizer.zero_grad()
             with th.no_grad():
                 # Compute the next V-values using the target network
-                next_v_values = value_network(replay_data.next_observations)
+                next_v_values = value_network_target(replay_data.next_observations)
                 # 1-step TD target
                 target_v_values = replay_data.rewards + (1 - replay_data.dones) * self.gamma * next_v_values
 

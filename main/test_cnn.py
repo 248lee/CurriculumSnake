@@ -21,7 +21,7 @@ RENDER = True
 FRAME_DELAY = 0.05 # 0.01 fast, 0.05 slow
 ROUND_DELAY = 5
 VALUE_MODEL_NAME = {"actor": "trained_models_cnn/snake_s7_l4_grow_g985_160000000_steps.zip", "critic": "trained_models_value/DVN_transfer_s7toBOSS_final.zip"}
-VALUE_MODEL_NAME2 = {"actor": "trained_models_cnn/snake_s7_l4_grow_g985_160000000_steps.zip", "critic": "trained_models_value/DVN_transfer_s7toBOSS_unfreeze_final.zip"}
+VALUE_MODEL_NAME2 = {"actor": "trained_models_cnn/snake_s7_l4_grow_g985_160000000_steps.zip", "critic": "trained_models_value/DVN_transfer_s7toBOSS_unfreeze_test_final.zip"}
 AC_MODEL_NAME = "trained_models_cnn/snake_s7_l4_grow_g985_160000000_steps"
 
 seed = random.randint(0, 1e9)
@@ -51,10 +51,6 @@ total_score = 0
 min_score = 1e9
 max_score = 0
 terminal_length_distrib = np.zeros(146)
-print(model.policy.features_extractor.state_dict())
-input()
-print(value_model2.feature_extractor.features_extractor.state_dict())
-input()
 for episode in range(NUM_EPISODE):
     obs, _ = env.reset(9487, None)
     episode_reward = 0
