@@ -160,6 +160,8 @@ class DVNNetwork(nn.Module):
         # We assume CxHxW images (channels first)
         # Re-ordering will be done by pre-preprocessing or wrapper
         self.feature_extractor = MaskablePPO.load(old_model_name).policy
+        for name, param in self.feature_extractor.named_parameters():
+            param.requires_grad = False
         # self.feature_extractor.set_training_mode(False)
         self.batch_norm = nn.BatchNorm1d(features_dim)
         self.hidden = nn.Sequential(nn.Linear(features_dim, 256), 
@@ -167,18 +169,14 @@ class DVNNetwork(nn.Module):
                                     nn.Linear(256, 128),
                                     nn.ReLU())
         self.value = nn.Linear(128, 1)
-        self.is_freeze = True
-    
+
     def forward(self, observations):
-        if self.is_freeze:
-            with th.no_grad():
-                feature = self.feature_extractor.extract_features(observations, self.feature_extractor.features_extractor)
-        else:
-            feature = self.feature_extractor.extract_features(observations, self.feature_extractor.features_extractor)
+        feature = self.feature_extractor.extract_features(observations, self.feature_extractor.features_extractor)
         y = self.batch_norm(feature)
         y = self.hidden(y)
         output = self.value(y)
         return output
     
-    def set_freeze(self, is_freeze):
-        self.is_freeze = is_freeze
+    def set_unfreeze(self):
+        for name, param in self.feature_extractor.named_parameters():
+            param.requires_grad = False

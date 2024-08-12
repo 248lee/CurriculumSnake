@@ -211,10 +211,9 @@ class DVN(OffPolicyAlgorithm):
 
         log_losses = []
         for _ in range(gradient_steps):
-            if self._current_progress_remaining > 0.7:
-                value_network.set_freeze(True)
-            else:
-                value_network.set_freeze(False)
+            if self._current_progress_remaining < 0.7:
+                value_network.set_unfreeze()
+                
             # Sample replay buffer
             replay_data = self.replay_buffer.sample(batch_size, env=self._vec_normalize_env)  # type: ignore[union-attr]
 
