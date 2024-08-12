@@ -152,7 +152,13 @@ class WhiteFeatureExtractorCNN(BaseFeaturesExtractor):
 
     def forward(self, observations: th.Tensor) -> th.Tensor:
         return observations
-    
+
+
+def init_weights(m):
+    if isinstance(m, nn.Linear):
+        th.nn.init.uniform_(m.weight, -0.01, 0.01)
+        m.bias.data.fill_(0)
+
 class DVNNetwork(nn.Module):
     def __init__(self, old_model_name: str, features_dim: int = 512):
         from sb3_contrib import MaskablePPO
@@ -168,7 +174,9 @@ class DVNNetwork(nn.Module):
                                     nn.ReLU(),
                                     nn.Linear(256, 128),
                                     nn.ReLU())
+        self.hidden.apply(init_weights)
         self.value = nn.Linear(128, 1)
+        th.nn.init.uniform_(self.value .weight, -0.01, 0.01)
 
     def forward(self, observations):
         feature = self.feature_extractor.extract_features(observations, self.feature_extractor.features_extractor)
