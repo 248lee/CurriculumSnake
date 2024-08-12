@@ -179,4 +179,4 @@ class DVNNetwork(nn.Module):
     
     def set_unfreeze(self):
         for name, param in self.feature_extractor.named_parameters():
-            param.requires_grad = False
+            param.requires_grad = True
