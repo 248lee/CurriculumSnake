@@ -4,8 +4,12 @@ import random
 
 import numpy as np
 
+import time
 os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = '1'
 import pygame
+SAVE_DIR = "game_states"
+import pickle
+
 
 class SnakeGame:
     def __init__(self, length, is_grow, seed=0, board_size=12, silent_mode=True):
@@ -61,6 +65,25 @@ class SnakeGame:
         self.score = 0
         random.seed()
 
+    def save_state(self):
+        os.makedirs(SAVE_DIR, exist_ok=True)
+        state = {
+            "snake": self.snake,
+            "direction": self.direction,
+            "food": self.food,
+            "score": self.score
+        }
+        with open(SAVE_DIR + '/len' + str(len(self.snake)) + '_state_' + time.strftime('%Y_%m_%d_%H_%M_%S',time.localtime(time.time())) + '.obj', 'wb') as file:
+            pickle.dump(state, file)
+
+    def load_state(self, file_name):
+        with open(SAVE_DIR + "/" + file_name, 'rb') as file:
+            state = pickle.load(file)
+        self.snake = state['snake']
+        self.non_snake = set([(row, col) for row in range(self.board_size) for col in range(self.board_size) if (row, col) not in self.snake])
+        self.direction = state['direction']
+        self.food = state['food']
+        self.score = state['score']
 
     def step(self, action):
         self._update_direction(action) # Update direction based on action.
@@ -302,7 +325,6 @@ class SnakeGame:
         
 
 if __name__ == "__main__":
-    import time
 
     seed = random.randint(0, 1e9)
     game = SnakeGame(seed=seed, silent_mode=False)

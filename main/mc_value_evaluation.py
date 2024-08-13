@@ -56,9 +56,11 @@ def main():
     # clip_range_schedule = linear_schedule(0.150, 0.025)
     custom_objects = {
         "learning_rate": lr_schedule,
+        "gamma": 0.985
     }
     model = VMaskablePPO.load("trained_models_cnn/snake_s7_l4_grow_g985_160000000_steps", env=env,custom_objects=custom_objects)
     model.set_old_policy_model("trained_models_cnn/snake_s7_l4_grow_g985_160000000_steps")
+    input(model.gamma)
 
     # Set the save directory
     if torch.backends.mps.is_available():

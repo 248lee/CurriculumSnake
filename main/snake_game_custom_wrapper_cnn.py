@@ -37,6 +37,17 @@ class SnakeEnv(gym.Env):
     def seed(self, arg1):
         pass
 
+    def save_state(self):
+        self.game.save_state()
+
+    def load_state(self, file_name):
+        self.game.load_state(file_name)
+        self.done = False
+        self.reward_step_counter = 0
+        self.total_steps = 0
+        obs = self._generate_observation()
+        return obs, None
+    
     def reset(self, seed, options):
         self.game.reset()
 
