@@ -13,7 +13,7 @@ import torch as th
 if torch.backends.mps.is_available():
     MODEL_PATH = r"trained_models_cnn_mps/ppo_snake_final"
 else:
-    MODEL_PATH = r"trained_models_cnn/snake_s7_l4_grow_g985_160000000_steps"
+    MODEL_PATH = r"trained_models_cnn/snake_BOSS_please_success_64000000_steps.zip"
 
 NUM_EPISODE = 1000
 
@@ -28,9 +28,9 @@ seed = random.randint(0, 1e9)
 print(f"Using seed = {seed} for testing.")
 
 if RENDER:
-    env = SnakeEnv(seed=seed, length = "random", is_grow=True, limit_step=True, silent_mode=False)
+    env = SnakeEnv(seed=seed, length = 276, is_grow=True, limit_step=True, silent_mode=False)
 else:
-    env = SnakeEnv(seed=seed, length = "random", is_grow=True, limit_step=True, silent_mode=True)
+    env = SnakeEnv(seed=seed, length = 276, is_grow=True, limit_step=True, silent_mode=True)
 
 # Load the trained model
 model = MaskablePPO.load(MODEL_PATH)
@@ -50,7 +50,7 @@ total_reward = 0
 total_score = 0
 min_score = 1e9
 max_score = 0
-terminal_length_distrib = np.zeros(146)
+terminal_length_distrib = np.zeros(443)
 for episode in range(NUM_EPISODE):
     obs, _ = env.reset(9487, None)
     episode_reward = 0
@@ -65,9 +65,9 @@ for episode in range(NUM_EPISODE):
     retry_limit = 9
     print(f"=================== Episode {episode + 1} ==================")
     while not (done or truncate):
-        is_save = input()
-        if is_save == 's':
-            env.save_state()
+        # is_save = input()
+        # if is_save == 's':
+        #     env.save_state()
 
         model.policy.set_training_mode(False)
         action, _ = model.predict(obs, action_masks=env.get_action_mask())
