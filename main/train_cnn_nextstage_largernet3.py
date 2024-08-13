@@ -87,7 +87,7 @@ def main():
             "CnnPolicy",
             env,
             old_model_name="trained_models_cnn/snake_s7_l4_grow_g985_160000000_steps",
-            dvn_model_name="trained_models_value/DVN_transfer_s7toBOSS_final.zip",
+            dvn_model_name="trained_models_value/DVN_transfer_s7toBOSS_unfreeze_target_small_init_final.zip",
             device="cuda",
             verbose=1,
             n_steps=2048,

@@ -156,7 +156,7 @@ class WhiteFeatureExtractorCNN(BaseFeaturesExtractor):
 
 def init_weights(m):
     if isinstance(m, nn.Linear):
-        th.nn.init.uniform_(m.weight, -0.01, 0.01)
+        th.nn.init.uniform_(m.weight, -0.1, 0.1)
         m.bias.data.fill_(0)
 
 class DVNNetwork(nn.Module):
@@ -176,7 +176,7 @@ class DVNNetwork(nn.Module):
                                     nn.ReLU())
         self.hidden.apply(init_weights)
         self.value = nn.Linear(128, 1)
-        th.nn.init.uniform_(self.value .weight, -0.01, 0.01)
+        th.nn.init.uniform_(self.value .weight, -0.1, 0.1)
 
     def forward(self, observations):
         feature = self.feature_extractor.extract_features(observations, self.feature_extractor.features_extractor)
