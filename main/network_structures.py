@@ -174,9 +174,7 @@ class DVNNetwork(nn.Module):
                                     nn.ReLU(),
                                     nn.Linear(256, 128),
                                     nn.ReLU())
-        self.hidden.apply(init_weights)
         self.value = nn.Linear(128, 1)
-        th.nn.init.uniform_(self.value .weight, -0.1, 0.1)
 
     def forward(self, observations):
         feature = self.feature_extractor.extract_features(observations, self.feature_extractor.features_extractor)
