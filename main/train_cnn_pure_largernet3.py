@@ -18,7 +18,7 @@ if torch.backends.mps.is_available():
 else:
     NUM_ENV = 32
 LOG_DIR = "logs"
-ExperimentName = "snake21_s1_len276"
+ExperimentName = "snake21_s1_len3"
 
 os.makedirs(LOG_DIR, exist_ok=True)
 
@@ -37,7 +37,7 @@ def linear_schedule(initial_value, final_value=0.0):
 
 def make_env(seed=0):
     def _init():
-        env = SnakeEnv(seed=seed, length=276, is_grow=True)
+        env = SnakeEnv(seed=seed, length=3, is_grow=True)
         env = ActionMasker(env, SnakeEnv.get_action_mask)
         env = Monitor(env)
         env.seed(seed)
@@ -75,7 +75,7 @@ def main():
         )
     else:
         lr_schedule = linear_schedule(2.5e-4, 2.5e-6)
-        clip_range_schedule = linear_schedule(0.150, 0.025)
+        clip_range_schedule = linear_schedule(0.01, 0.003)
         # clip_range_schedule = linear_schedule(0.150, 0.025)
         import torch as th
         from network_structures import CustomFeatureExtractorCNN
