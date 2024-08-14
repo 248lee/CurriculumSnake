@@ -18,7 +18,7 @@ if torch.backends.mps.is_available():
 else:
     NUM_ENV = 32
 LOG_DIR = "logs"
-ExperimentName = "snake21_s1_len3"
+ExperimentName = "snake21_s1_len376"
 
 os.makedirs(LOG_DIR, exist_ok=True)
 
@@ -37,7 +37,7 @@ def linear_schedule(initial_value, final_value=0.0):
 
 def make_env(seed=0):
     def _init():
-        env = SnakeEnv(seed=seed, length=3, is_grow=True)
+        env = SnakeEnv(seed=seed, length=376, is_grow=True)
         env = ActionMasker(env, SnakeEnv.get_action_mask)
         env = Monitor(env)
         env.seed(seed)

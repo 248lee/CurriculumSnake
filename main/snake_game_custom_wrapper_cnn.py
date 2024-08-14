@@ -85,7 +85,7 @@ class SnakeEnv(gym.Env):
             # Game Over penalty is based on snake size.
             # reward = - math.pow(self.max_growth, (self.grid_size - info["snake_size"]) / self.max_growth) # (-max_growth, -1)            
             # reward = reward * 0.002  # original: * 0.1
-            reward = -0.5
+            reward = -1
             return obs, reward, self.done, False, info
           
         elif info["food_obtained"]: # Food eaten. Reward boost on snake size.

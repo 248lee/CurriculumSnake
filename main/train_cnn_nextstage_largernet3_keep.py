@@ -17,7 +17,7 @@ if torch.backends.mps.is_available():
 else:
     NUM_ENV = 32
 LOG_DIR = "logs"
-ExperimentName = "snake_BOSS_please_lower"
+ExperimentName = "snake21_s1_len300"
 
 os.makedirs(LOG_DIR, exist_ok=True)
 
@@ -36,7 +36,7 @@ def linear_schedule(initial_value, final_value=0.0):
 
 def make_env(seed=0):
     def _init():
-        env = SnakeEnv(seed=seed, length="random", is_grow=True)
+        env = SnakeEnv(seed=seed, length=300, is_grow=True)
         env = ActionMasker(env, SnakeEnv.get_action_mask)
         env = Monitor(env)
         env.seed(seed)
@@ -80,7 +80,7 @@ def main():
         "gamma": 0.985,
         "clip_range": 0.008
         }
-        model = MaskablePPO.load("trained_models_cnn/snake_s7_l4_grow_g985_160000000_steps", env=env,custom_objects=custom_objects)
+        model = MaskablePPO.load("trained_models_cnn/snake21_s1_len300_76000000_steps", env=env,custom_objects=custom_objects)
 
     # Set the save directory
     if torch.backends.mps.is_available():
