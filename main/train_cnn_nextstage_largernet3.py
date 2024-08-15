@@ -17,7 +17,7 @@ if torch.backends.mps.is_available():
 else:
     NUM_ENV = 32
 LOG_DIR = "logs"
-ExperimentName = "snake_BOSS_please_success"
+ExperimentName = "snake21_len350loads_please_success"
 
 os.makedirs(LOG_DIR, exist_ok=True)
 
@@ -36,7 +36,17 @@ def linear_schedule(initial_value, final_value=0.0):
 
 def make_env(seed=0):
     def _init():
-        env = SnakeEnv(seed=seed, length=276, is_grow=True)
+        state_name_list = [
+            'len350_state_2024_08_15_07_51_07.obj',
+            'len352_state_2024_08_15_07_46_41.obj',
+            'len353_state_2024_08_15_08_46_43.obj',
+            'len356_state_2024_08_15_08_59_36.obj',
+            'len358_state_2024_08_15_08_47_30.obj',
+            'len359_state_2024_08_15_09_00_32.obj',
+            'len366_state_2024_08_15_08_48_32.obj',
+            'len369_state_2024_08_15_08_49_35.obj'
+        ]
+        env = SnakeEnv(seed=seed, length=state_name_list, is_grow=True)
         env = ActionMasker(env, SnakeEnv.get_action_mask)
         env = Monitor(env)
         env.seed(seed)
@@ -86,8 +96,8 @@ def main():
         model = TRMaskablePPO(
             "CnnPolicy",
             env,
-            old_model_name="trained_models_cnn/snake_s7_l4_grow_g985_160000000_steps",
-            dvn_model_name="trained_models_value/DVN_transfer_s7toBOSS_unfreeze_target_small_init_final.zip",
+            old_model_name="trained_models_cnn/snake21_len300_please_success_38000000_steps",
+            dvn_model_name="trained_models_value/DVN_transfer_snake21_s2tos3_len350loads_final.zip",
             device="cuda",
             verbose=1,
             n_steps=2048,

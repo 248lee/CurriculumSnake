@@ -56,6 +56,9 @@ class SnakeGame:
         if self.length == 'random':
             length = random.randint(3, self.grid_size - 1)
             self.snake = self._get_init_snake(length)
+        elif isinstance(self.length, list):
+            load_state_name = random.choice(self.length)
+            self.load_state(load_state_name)
         else:
             self.snake = self._get_init_snake(self.length)
         # self.snake = [(self.board_size // 2 + i, self.board_size // 2) for i in range(1, -2, -1)] # Initialize the snake with three cells in (row, column) format.
