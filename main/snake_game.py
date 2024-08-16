@@ -54,7 +54,7 @@ class SnakeGame:
 
     def reset(self):
         if self.length == 'random':
-            length = random.randint(3, self.grid_size - 1)
+            length = random.randint(3, 300)
             self.snake = self._get_init_snake(length)
         elif isinstance(self.length, list):
             load_state_name = random.choice(self.length)

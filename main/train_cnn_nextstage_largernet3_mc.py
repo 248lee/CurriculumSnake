@@ -17,7 +17,7 @@ if torch.backends.mps.is_available():
 else:
     NUM_ENV = 32
 LOG_DIR = "logs"
-ExperimentName = "snake_BOSS"
+ExperimentName = "snake21_BOSS"
 
 os.makedirs(LOG_DIR, exist_ok=True)
 
@@ -83,15 +83,15 @@ def main():
             net_arch=dict(pi=[512, 256, 128], vf=[128, 32])
         )
         # Instantiate a PPO agent using CUDA.
-        old_model_names = ['trained_models_cnn/snake_s5_l2_len56_60000000_steps', 'trained_models_cnn/snake_s6_l3_len72_clip_84000000_steps', 'trained_models_cnn/snake_s7_l4_grow_g985_160000000_steps']
+        old_model_names = ['trained_models_cnn/snake21_s1_len3', 'trained_models_cnn/snake21_s1_len100_94000000_steps', 'trained_models_cnn/snake21_len300_please_success_38000000_steps', 'trained_models_cnn/snake21_len350loads_please_success_124000000_steps']
         model = TRMaskablePPOMC(
             "CnnPolicy",
             env,
             old_model_names=old_model_names,
-            dvn_model_names=["trained_models_value/DVN_transfer_s5toBOSS_final.zip", "trained_models_value/DVN_transfer_s6toBOSS_final.zip", "trained_models_value/DVN_transfer_s7toBOSS_final.zip"],
+            dvn_model_names=["trained_models_value/DVN_len3_to_BOSS_final.zip", "trained_models_value/DVN_len100_to_BOSS_final.zip", "trained_models_value/DVN_len300_to_BOSS_final.zip", "trained_models_value/DVN_load_to_BOSS_final.zip"],
             device="cuda",
             verbose=1,
-            n_steps=2048,
+            n_steps=4096,
             batch_size=512,
             n_epochs=4,
             gamma=0.985,

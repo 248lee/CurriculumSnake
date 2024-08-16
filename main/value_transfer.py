@@ -54,7 +54,7 @@ def make_env(seed=0):
             'len366_state_2024_08_15_08_48_32.obj',
             'len369_state_2024_08_15_08_49_35.obj'
         ]
-        env = SnakeEnv(seed=seed, length=state_name_list, is_grow=True, silent_mode=True)
+        env = SnakeEnv(seed=seed, length="random", is_grow=True, silent_mode=True)
         env = ActionMasker(env, SnakeEnv.get_action_mask)
         env = Monitor(env)
         env.seed(seed)
@@ -74,7 +74,7 @@ def main():
     # lr_schedule = linear_schedule(5.0e-5, 2.5e-6)
 
     model = DVN(
-        'trained_models_cnn/' + "snake21_len300_please_success_38000000_steps",
+        'trained_models_cnn/' + "snake21_len350loads_please_success_124000000_steps",
         "CnnPolicy",
         env,
         lr_schedule,
@@ -104,7 +104,7 @@ def main():
     # Set up callbacks
     # Note that 1 timesetp = 6 frame
     checkpoint_interval = 1000000  # checkpoint_interval * num_envs = total_steps_per_checkpoint
-    ExperimentName = "DVN_transfer_snake21_s2tos3_len350loads"
+    ExperimentName = "DVN_load_to_BOSS"
     checkpoint_callback = CheckpointCallback(save_freq=checkpoint_interval, save_path=save_dir, name_prefix=ExperimentName)
 
     # Writing the training logs from stdout to a file

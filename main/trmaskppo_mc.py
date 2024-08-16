@@ -401,10 +401,10 @@ class TRMaskablePPOMC(OnPolicyAlgorithm):
 
                     delta_value = rollout_data.returns - max_last_stage_values
                     lambd = th.mean(delta_value) + 3e-3
-                    lambd = th.clip(lambd, min=-0.1, max=0) * (-50)
+                    lambd = th.clip(lambd, min=-0.3, max=0) * (-16)
                 transfer_regularization = lambd * F.mse_loss(probs, chosen_last_stage_probs)
                 lambds.append(lambd.item())
-                clip_range = 0.008 + 0.06 * lambd.item()
+                clip_range = 0.008 + 0.03 * lambd.item()
 
                 # clipped surrogate loss
                 policy_loss_1 = advantages * ratio
@@ -438,7 +438,7 @@ class TRMaskablePPOMC(OnPolicyAlgorithm):
 
                 entropy_losses.append(entropy_loss.item())
 
-                loss = policy_loss + self.ent_coef * entropy_loss + self.vf_coef * value_loss
+                loss = policy_loss + self.ent_coef * entropy_loss + self.vf_coef * value_loss + transfer_regularization
 
                 transfer_regular_losses.append(transfer_regularization.item())
                 delta_values.append(th.mean(delta_value).item())
