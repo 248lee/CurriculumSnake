@@ -8,6 +8,7 @@ from stable_baselines3.common.vec_env import SubprocVecEnv
 from stable_baselines3.common.callbacks import CheckpointCallback
 
 from trmaskppo_mc import TRMaskablePPOMC
+from trmaskppo_mc_indi import TRMaskablePPOMCIndi
 from sb3_contrib.common.wrappers import ActionMasker
 
 from snake_game_custom_wrapper_cnn import SnakeEnv
@@ -57,7 +58,7 @@ def main():
         lr_schedule = linear_schedule(5e-4, 2.5e-6)
         # clip_range_schedule = linear_schedule(0.150, 0.025)
         # Instantiate a PPO agent using MPS (Metal Performance Shaders).
-        model = TRMaskablePPOMC(
+        model = TRMaskablePPOMCIndi(
             "CnnPolicy",
             # env,
             # old_model_name="trained_models_cnn/snake_s1_len3_9000000_steps",
@@ -84,7 +85,7 @@ def main():
         )
         # Instantiate a PPO agent using CUDA.
         old_model_names = ['trained_models_cnn/snake21_s1_len3', 'trained_models_cnn/snake21_s1_len100_94000000_steps', 'trained_models_cnn/snake21_len300_please_success_38000000_steps', 'trained_models_cnn/snake21_len350loads_please_success_124000000_steps']
-        model = TRMaskablePPOMC(
+        model = TRMaskablePPOMCIndi(
             "CnnPolicy",
             env,
             old_model_names=old_model_names,
