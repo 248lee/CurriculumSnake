@@ -386,7 +386,14 @@ class TRMaskablePPOIndi(OnPolicyAlgorithm):
                     delta_value_clipped = th.clip(delta_value, min=-0.5, max=0)
                     weight = delta_value_clipped / th.mean(delta_value_clipped)
                 transfer_regularization = lambd * th.mean(th.multiply(weight, (prob - last_stage_prob)**2))# F.mse_loss(prob, last_stage_prob)
-                # print(F.mse_loss(th.multiply(weight**0.5, prob), th.multiply(weight**0.5, last_stage_prob)))
+                # print(F.mse_loss(th.multiply(weight**0.5, prob), th.multiply(weight**0.5, last_stage_prob)))        # indi lambd
+                # print(th.mean(th.multiply(weight.squeeze(dim=-1), th.mean((prob - last_stage_prob)**2, dim=-1))))   # indi lambd
+                # print(th.mean(th.multiply(weight, (prob - last_stage_prob)**2)))                                    # indi lambd
+                # print(th.mean(th.mean((prob - last_stage_prob)**2, dim=-1)))                                        # original
+                # print(F.mse_loss(prob, last_stage_prob))                                                            # original
+                # print(th.mean((prob - last_stage_prob)**2))                                                         # original
+                # print(weight.shape, th.mean((prob - last_stage_prob)**2, dim=-1).shape, prob.shape, last_stage_prob.shape) # (512, 1), (512), (512, 4), (512, 4)
+                # input()
                 lambds.append(lambd.item())
                 clip_range = 0.008 + 0.03 * lambd.item()
 
