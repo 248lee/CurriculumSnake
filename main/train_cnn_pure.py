@@ -18,7 +18,7 @@ if torch.backends.mps.is_available():
 else:
     NUM_ENV = 32
 LOG_DIR = "logs"
-ExperimentName = "snake21_s1_len376"
+ExperimentName = "snake21_s1_len90_max150"
 
 os.makedirs(LOG_DIR, exist_ok=True)
 
@@ -37,7 +37,7 @@ def linear_schedule(initial_value, final_value=0.0):
 
 def make_env(seed=0):
     def _init():
-        env = SnakeEnv(seed=seed, length=376, is_grow=True)
+        env = SnakeEnv(seed=seed, length=90, max_length=150, is_grow=True, silent_mode=True)
         env = ActionMasker(env, SnakeEnv.get_action_mask)
         env = Monitor(env)
         env.seed(seed)
@@ -82,7 +82,7 @@ def main():
         policy_kwargs = dict(
             features_extractor_class=CustomFeatureExtractorCNN,
             activation_fn=th.nn.ReLU,
-            net_arch=dict(pi=[512, 256, 128], vf=[128, 32])
+            net_arch=dict(pi=[256, 128], vf=[128])
         )
         # Instantiate a PPO agent using CUDA.
         model = MaskablePPO(
@@ -93,7 +93,7 @@ def main():
             n_steps=2048,
             batch_size=512,
             n_epochs=4,
-            gamma=0.985,
+            gamma=0.95,
             learning_rate=lr_schedule,
             clip_range=clip_range_schedule,
             tensorboard_log=LOG_DIR,
