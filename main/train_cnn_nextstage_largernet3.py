@@ -8,6 +8,7 @@ from stable_baselines3.common.vec_env import SubprocVecEnv
 from stable_baselines3.common.callbacks import CheckpointCallback
 
 from trmaskppo import TRMaskablePPO
+from trmaskppo_indi import TRMaskablePPOIndi
 from sb3_contrib.common.wrappers import ActionMasker
 
 from snake_game_custom_wrapper_cnn import SnakeEnv
@@ -17,7 +18,7 @@ if torch.backends.mps.is_available():
 else:
     NUM_ENV = 32
 LOG_DIR = "logs"
-ExperimentName = "snake21_len350loads_indi_lambd"
+ExperimentName = "snake21_len80_max160"
 
 os.makedirs(LOG_DIR, exist_ok=True)
 
@@ -46,7 +47,7 @@ def make_env(seed=0):
             'len366_state_2024_08_15_08_48_32.obj',
             'len369_state_2024_08_15_08_49_35.obj'
         ]
-        env = SnakeEnv(seed=seed, length=state_name_list, is_grow=True)
+        env = SnakeEnv(seed=seed, length=80, max_length=160, is_grow=True)
         env = ActionMasker(env, SnakeEnv.get_action_mask)
         env = Monitor(env)
         env.seed(seed)
@@ -93,11 +94,11 @@ def main():
             net_arch=dict(pi=[512, 256, 128], vf=[128, 32])
         )
         # Instantiate a PPO agent using CUDA.
-        model = TRMaskablePPO(
+        model = TRMaskablePPOIndi(
             "CnnPolicy",
             env,
-            old_model_name="trained_models_cnn/snake21_len300_please_success_38000000_steps",
-            dvn_model_name="trained_models_value/DVN_transfer_snake21_s2tos3_len350loads_final.zip",
+            old_model_name="trained_models_cnn/snake21_s1_len3",
+            dvn_model_name="trained_models_value/DVN_len3tolen80_final.zip",
             device="cuda",
             verbose=1,
             n_steps=2048,

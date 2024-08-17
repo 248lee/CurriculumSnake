@@ -13,7 +13,7 @@ import torch as th
 if torch.backends.mps.is_available():
     MODEL_PATH = r"trained_models_cnn_mps/ppo_snake_final"
 else:
-    MODEL_PATH = r"trained_models_cnn/snake21_s1_len90_max150_30000000_steps.zip"
+    MODEL_PATH = r"trained_models_cnn/snake21_s1_len3_max70_42000000_steps.zip"
 
 NUM_EPISODE = 500
 
@@ -39,9 +39,9 @@ state_name_list = [
 ]
 
 if RENDER:
-    env = SnakeEnv(seed=seed, length = 90, is_grow=True, limit_step=True, silent_mode=False)
+    env = SnakeEnv(seed=seed, length = 80, is_grow=True, limit_step=True, silent_mode=False)
 else:
-    env = SnakeEnv(seed=seed, length = 90, is_grow=True, limit_step=True, silent_mode=True)
+    env = SnakeEnv(seed=seed, length = 3, is_grow=True, limit_step=True, silent_mode=True)
 
 # Load the trained model
 model = MaskablePPO.load(MODEL_PATH)

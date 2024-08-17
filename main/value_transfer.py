@@ -54,7 +54,7 @@ def make_env(seed=0):
             'len366_state_2024_08_15_08_48_32.obj',
             'len369_state_2024_08_15_08_49_35.obj'
         ]
-        env = SnakeEnv(seed=seed, length=90, max_length=160, is_grow=True, silent_mode=True)
+        env = SnakeEnv(seed=seed, length=80, max_length=160, is_grow=True, silent_mode=True)
         env = ActionMasker(env, SnakeEnv.get_action_mask)
         env = Monitor(env)
         env.seed(seed)
@@ -104,7 +104,7 @@ def main():
     # Set up callbacks
     # Note that 1 timesetp = 6 frame
     checkpoint_interval = 1000000  # checkpoint_interval * num_envs = total_steps_per_checkpoint
-    ExperimentName = "DVN_len3tolen90"
+    ExperimentName = "DVN_len3tolen80"
     checkpoint_callback = CheckpointCallback(save_freq=checkpoint_interval, save_path=save_dir, name_prefix=ExperimentName)
 
     # Writing the training logs from stdout to a file
@@ -112,7 +112,7 @@ def main():
     log_file_path = os.path.join(save_dir, "training_log.txt")
     print('start training')
     model.learn(
-        total_timesteps=int(2000000), # total_timesteps = stage_interval * num_envs * num_stages (1120 rounds)
+        total_timesteps=int(1400000), # total_timesteps = stage_interval * num_envs * num_stages (1120 rounds)
         callback=[checkpoint_callback],#, stage_increase_callback]
         progress_bar=True,
         tb_log_name=ExperimentName,
