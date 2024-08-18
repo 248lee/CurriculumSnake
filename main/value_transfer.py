@@ -69,7 +69,7 @@ def main():
     # lr_schedule = linear_schedule(5.0e-5, 2.5e-6)
 
     model = DVN(
-        'trained_models_cnn/' + "snake21_s1_len3.zip",
+        'trained_models_cnn/' + "snake21_len350loads_please_success_124000000_steps.zip",
         "CnnPolicy",
         env,
         lr_schedule,
@@ -99,7 +99,7 @@ def main():
     # Set up callbacks
     # Note that 1 timesetp = 6 frame
     checkpoint_interval = 1000000  # checkpoint_interval * num_envs = total_steps_per_checkpoint
-    ExperimentName = "DVN_len3_to_BOSS"
+    ExperimentName = "DVN_load_to_BOSS"
     checkpoint_callback = CheckpointCallback(save_freq=checkpoint_interval, save_path=save_dir, name_prefix=ExperimentName)
 
     # Writing the training logs from stdout to a file
@@ -107,7 +107,7 @@ def main():
     log_file_path = os.path.join(save_dir, "training_log.txt")
     print('start training')
     model.learn(
-        total_timesteps=int(2000000), # total_timesteps = stage_interval * num_envs * num_stages (1120 rounds)
+        total_timesteps=int(4000000), # total_timesteps = stage_interval * num_envs * num_stages (1120 rounds)
         callback=[checkpoint_callback],#, stage_increase_callback]
         progress_bar=True,
         tb_log_name=ExperimentName,

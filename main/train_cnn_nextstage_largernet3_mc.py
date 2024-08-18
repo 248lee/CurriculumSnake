@@ -97,7 +97,7 @@ def main():
             dvn_model_names=["trained_models_value/DVN_len3_to_BOSS_final.zip", "trained_models_value/DVN_len80toBOSS_final.zip", "trained_models_value/DVN_len300_to_BOSS_final.zip", "trained_models_value/DVN_load_to_BOSS_final.zip"],
             device="cuda",
             verbose=1,
-            n_steps=4096,
+            n_steps=2048,
             batch_size=512,
             n_epochs=4,
             gamma=0.985,
