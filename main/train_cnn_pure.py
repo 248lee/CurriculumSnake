@@ -93,7 +93,7 @@ def main():
             n_steps=2048,
             batch_size=512,
             n_epochs=4,
-            gamma=0.95,
+            gamma=0.94,
             learning_rate=lr_schedule,
             clip_range=clip_range_schedule,
             tensorboard_log=LOG_DIR,
