@@ -6,9 +6,9 @@ import numpy as np
 from snake_game import SnakeGame
 
 class SnakeEnv(gym.Env):
-    def __init__(self, length, is_grow, max_length = None, seed=0, board_size=21, silent_mode=True, limit_step=True):
+    def __init__(self, length, is_grow, max_length = None, seed=0, board_size=21, silent_mode=True, limit_step=True, random_states=[]):
         super().__init__()
-        self.game = SnakeGame(length, is_grow, seed=seed, board_size=board_size, silent_mode=silent_mode)
+        self.game = SnakeGame(length, is_grow, seed=seed, board_size=board_size, silent_mode=silent_mode, random_states=random_states)
         self.game.reset()
 
         self.silent_mode = silent_mode

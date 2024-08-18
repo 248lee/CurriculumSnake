@@ -12,7 +12,7 @@ import pickle
 
 
 class SnakeGame:
-    def __init__(self, length, is_grow, seed=0, board_size=12, silent_mode=True):
+    def __init__(self, length, is_grow, seed=0, board_size=12, silent_mode=True, random_states=[]):
         self.board_size = board_size
         self.grid_size = self.board_size ** 2
         self.cell_size = 40
@@ -47,6 +47,7 @@ class SnakeGame:
         self.food = None
         self.seed_value = seed
         self.length = length
+        self.random_states = random_states
 
         random.seed(seed) # Set random seed.
         
@@ -54,8 +55,12 @@ class SnakeGame:
 
     def reset(self):
         if self.length == 'random':
-            length = random.randint(3, 300)
-            self.snake = self._get_init_snake(length)
+            length = random.randint(3, 300 + len(self.random_states))
+            if length <= 300:
+                self.snake = self._get_init_snake(length)
+            else:
+                load_state_name = random.choice(self.random_states)
+                self.load_state(load_state_name)
         elif isinstance(self.length, list):
             load_state_name = random.choice(self.length)
             self.load_state(load_state_name)
