@@ -37,17 +37,12 @@ def linear_schedule(initial_value, final_value=0.0):
 
 def make_env(seed=0):
     def _init():
-        state_name_list = [
-            'len350_state_2024_08_15_07_51_07.obj',
-            'len352_state_2024_08_15_07_46_41.obj',
-            'len353_state_2024_08_15_08_46_43.obj',
-            'len356_state_2024_08_15_08_59_36.obj',
-            'len358_state_2024_08_15_08_47_30.obj',
-            'len359_state_2024_08_15_09_00_32.obj',
-            'len366_state_2024_08_15_08_48_32.obj',
-            'len369_state_2024_08_15_08_49_35.obj'
-        ]
-        env = SnakeEnv(seed=seed, length="random", random_states=state_name_list, max_length=None, is_grow=True, silent_mode=True)
+        # Specify the directory
+        directory = "./game_states"
+
+        # Get the list of filenames in the specified directory
+        state_name_list = [filename for filename in os.listdir(directory) if os.path.isfile(os.path.join(directory, filename))]
+        env = SnakeEnv(seed=seed, length=state_name_list, max_length=None, is_grow=True, silent_mode=True)
         env = ActionMasker(env, SnakeEnv.get_action_mask)
         env = Monitor(env)
         env.seed(seed)
