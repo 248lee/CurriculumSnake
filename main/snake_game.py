@@ -218,7 +218,7 @@ class SnakeGame:
         return result_snake
     
     def draw_score(self):
-        score_text = self.font.render(f"Score: {self.score}", True, (255, 255, 255))
+        score_text = self.font.render(f"Length: {len(self.snake)}", True, (255, 255, 255))
         self.screen.blit(score_text, (self.border_size, self.height + 2 * self.border_size))
     
     def draw_welcome_screen(self):
