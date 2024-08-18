@@ -17,7 +17,7 @@ if torch.backends.mps.is_available():
 else:
     NUM_ENV = 32
 LOG_DIR = "logs"
-ExperimentName = "snake21_s2_len90_max150"
+ExperimentName = "snake21_len80_max160"
 
 os.makedirs(LOG_DIR, exist_ok=True)
 
@@ -36,7 +36,7 @@ def linear_schedule(initial_value, final_value=0.0):
 
 def make_env(seed=0):
     def _init():
-        env = SnakeEnv(seed=seed, length=90, max_length=150, is_grow=True, silent_mode=True)
+        env = SnakeEnv(seed=seed, length=80, max_length=160, is_grow=True, silent_mode=True)
         env = ActionMasker(env, SnakeEnv.get_action_mask)
         env = Monitor(env)
         env.seed(seed)
@@ -73,14 +73,14 @@ def main():
             # tensorboard_log=LOG_DIR
         )
     else:
-        lr_schedule = linear_schedule(5e-6, 1e-6)
+        lr_schedule = linear_schedule(1.44e-4, 1e-6)
         # clip_range_schedule = linear_schedule(0.150, 0.025)
         custom_objects = {
         "learning_rate": lr_schedule,
         "gamma": 0.985,
         "clip_range": 0.008
         }
-        model = MaskablePPO.load("trained_models_cnn/snake21_s1_len300_76000000_steps", env=env,custom_objects=custom_objects)
+        model = MaskablePPO.load("trained_models_cnn/snake21_len80_max160_44000000_steps", env=env,custom_objects=custom_objects)
 
     # Set the save directory
     if torch.backends.mps.is_available():
