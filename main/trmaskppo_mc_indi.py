@@ -417,9 +417,9 @@ class TRMaskablePPOMCIndi(OnPolicyAlgorithm):
                     chosen_last_stage_probs = last_stage_probses[chosen_model_indices, th.tensor(range(len(chosen_model_indices))), :]
 
                     delta_value = rollout_data.returns - max_last_stage_values
-                    lambd = th.mean(delta_value)
-                    lambd = th.clip(lambd, min=-0.5, max=-5e-3)
-                    lambd = 0.6 * th.log(-200 * lambd)
+                    lambd = th.mean(delta_value).item()
+                    lambd = np.clip(lambd, a_min=-0.5, a_max=-5e-3)
+                    lambd = 0.6 * np.log(-200 * lambd)
                     delta_value_clipped = th.clip(delta_value, min=-0.5, max=0)
                     weight = delta_value_clipped / th.mean(delta_value_clipped)
                     weight = weight.unsqueeze(-1)  # shape: (512, 1)
