@@ -15,7 +15,7 @@ from snake_game_custom_wrapper_cnn import SnakeEnv
 if torch.backends.mps.is_available():
     NUM_ENV = 32 * 2
 else:
-    NUM_ENV = 50
+    NUM_ENV = 36
 LOG_DIR = "logs"
 ExperimentName = "mc_value_evaluation_len3_in_len80"
 from network_structures import CustomFeatureExtractorCNN
@@ -44,7 +44,7 @@ def make_env(seed=0):
             'len93_state_2024_08_13_10_54_36.obj',
             'len95_state_2024_08_13_10_54_42.obj',
         ]
-        env = SnakeEnv(seed=seed, length=state_name_list, max_length=160, is_grow=True)
+        env = SnakeEnv(seed=seed, length=state_name_list, max_length=195, is_grow=True)
         env = ActionMasker(env, SnakeEnv.get_action_mask)
         env = Monitor(env)
         env.seed(seed)
@@ -80,7 +80,7 @@ def main():
             tensorboard_log=LOG_DIR,
             policy_kwargs=policy_kwargs
         )
-    model.set_old_policy_model("trained_models_cnn/snake21_s1_len3_max70_60000000_steps")
+    model.set_old_policy_model("trained_models_cnn/snake21_s1_len3")
 
     # Set the save directory
     if torch.backends.mps.is_available():
