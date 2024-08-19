@@ -15,9 +15,10 @@ from snake_game_custom_wrapper_cnn import SnakeEnv
 if torch.backends.mps.is_available():
     NUM_ENV = 32 * 2
 else:
-    NUM_ENV = 32
+    NUM_ENV = 50
 LOG_DIR = "logs"
-ExperimentName = "mc_value_evaluation"
+ExperimentName = "mc_value_evaluation_len80_in_BOSS"
+from network_structures import CustomFeatureExtractorCNN
 
 os.makedirs(LOG_DIR, exist_ok=True)
 
@@ -36,7 +37,12 @@ def linear_schedule(initial_value, final_value=0.0):
 
 def make_env(seed=0):
     def _init():
-        env = SnakeEnv(seed=seed, length=80, is_grow=True)
+        # Specify the directory
+        directory = "./game_states"
+
+        # Get the list of filenames in the specified directory
+        state_name_list = [filename for filename in os.listdir(directory) if os.path.isfile(os.path.join(directory, filename))]
+        env = SnakeEnv(seed=seed, length=state_name_list, max_length=None, is_grow=True, silent_mode=True)
         env = ActionMasker(env, SnakeEnv.get_action_mask)
         env = Monitor(env)
         env.seed(seed)
@@ -54,13 +60,25 @@ def main():
     env = SubprocVecEnv([make_env(seed=s) for s in seed_set])
     lr_schedule = linear_schedule(2.5e-4, 2.5e-6)
     # clip_range_schedule = linear_schedule(0.150, 0.025)
-    custom_objects = {
-        "learning_rate": lr_schedule,
-        "gamma": 0.985
-    }
-    model = VMaskablePPO.load("trained_models_cnn/snake_s7_l4_grow_g985_160000000_steps", env=env,custom_objects=custom_objects)
-    model.set_old_policy_model("trained_models_cnn/snake_s7_l4_grow_g985_160000000_steps")
-    input(model.gamma)
+    policy_kwargs = dict(
+            features_extractor_class=CustomFeatureExtractorCNN,
+            activation_fn=torch.nn.ReLU,
+            net_arch=dict(pi=[1], vf=[128, 32])
+        )
+    model = VMaskablePPO(
+            "CnnPolicy",
+            env,
+            device="cuda",
+            verbose=1,
+            n_steps=2048,
+            batch_size=512,
+            n_epochs=4,
+            gamma=0.985,
+            learning_rate=lr_schedule,
+            tensorboard_log=LOG_DIR,
+            policy_kwargs=policy_kwargs
+        )
+    model.set_old_policy_model("trained_models_cnn/snake21_len80_max160_44000000_steps")
 
     # Set the save directory
     if torch.backends.mps.is_available():
@@ -77,7 +95,7 @@ def main():
     log_file_path = os.path.join(save_dir, "training_log.txt")
 
     model.learn(
-        total_timesteps=int(100000000),
+        total_timesteps=int(10000000),
         callback=[checkpoint_callback],
         tb_log_name=ExperimentName,
         progress_bar=True

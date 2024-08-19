@@ -206,8 +206,8 @@ class DVN(OffPolicyAlgorithm):
         global value_optimizer
         global value_network_target
         if value_network == None:
-            value_network = DVNNetwork(self.policy_network_name).to('cuda')
-            value_network_target = DVNNetwork(self.policy_network_name).to('cuda')
+            value_network = DVNNetwork("random_feature_extractor.zip").to('cuda')
+            value_network_target = DVNNetwork("random_feature_extractor.zip").to('cuda')
             value_optimizer = th.optim.Adam(value_network.parameters())
         value_network.train()
         # Update learning rate according to schedule

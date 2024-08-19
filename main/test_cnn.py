@@ -26,9 +26,14 @@ VALUE_MODEL_NAMES = [
     # {"actor": "trained_models_cnn/snake21_len80_max160_44000000_steps.zip", "critic": "trained_models_value/DVN_len80toBOSS_final.zip"},
     # {"actor": "trained_models_cnn/snake21_len300_please_success_38000000_steps.zip", "critic": "trained_models_value/DVN_len300_to_BOSS_final.zip"},
     # {"actor": "trained_models_cnn/snake21_len350loads_please_success_124000000_steps.zip", "critic": "trained_models_value/DVN_load_to_BOSS_final.zip"},
-    # {"actor": "trained_models_cnn/snake21_BOSS_olease_success_22000000_steps.zip", "critic": "trained_models_value/BOSS_policy_evaluation_final.zip"},
+    # {"actor": "random_feature_extractor.zip", "critic": "trained_models_value/DVN_len80toBOSS_please_success_final.zip"},
 ]
-AC_MODEL_NAME = None# "trained_models_cnn/snake_s7_l4_grow_g985_160000000_steps"
+AC_MODEL_NAMES = [
+    "trained_models_cnn/mc_value_evaluation_len3_in_BOSS",
+    "trained_models_cnn/mc_value_evaluation_len80_in_BOSS",
+    "trained_models_cnn/mc_value_evaluation_len300_in_BOSS",
+    "trained_models_cnn/mc_value_evaluation_loads_in_BOSS",
+]
 
 seed = random.randint(0, 1e9)
 print(f"Using seed = {seed} for testing.")
@@ -38,6 +43,7 @@ directory = "./game_states"
 
 # Get the list of filenames in the specified directory
 state_name_list = [filename for filename in os.listdir(directory) if os.path.isfile(os.path.join(directory, filename))]
+state_name_list = ['len238_state_2024_08_18_17_32_54.obj']
 
 if RENDER:
     env = SnakeEnv(seed=seed, length = state_name_list, is_grow=True, limit_step=True, silent_mode=False)
@@ -46,16 +52,19 @@ else:
 
 # Load the trained model
 model = MaskablePPO.load(MODEL_PATH)
-if VALUE_MODEL_NAMES != None:
+if VALUE_MODEL_NAMES != []:
     value_models = []
     for vmn in VALUE_MODEL_NAMES:
         value_model = DVNNetwork(old_model_name=vmn["actor"]).to('cuda')
         value_model.load_state_dict(th.load(vmn["critic"]))
         value_model.eval()
         value_models.append(value_model)
-if AC_MODEL_NAME != None:
-    ac_model = MaskablePPO.load(AC_MODEL_NAME)
-    ac_model.policy.set_training_mode(False)
+if AC_MODEL_NAMES != []:
+    ac_models = []
+    for acn in AC_MODEL_NAMES:
+        ac_model = MaskablePPO.load(acn)
+        ac_model.policy.set_training_mode(False)
+        ac_models.append(ac_model)
 
 total_reward = 0
 total_score = 0
@@ -83,7 +92,7 @@ for episode in range(NUM_EPISODE):
 
         model.policy.set_training_mode(False)
         action, _ = model.predict(obs, action_masks=env.get_action_mask())
-        if VALUE_MODEL_NAMES != []:
+        if VALUE_MODEL_NAMES != [] or AC_MODEL_NAMES != []:
             obs, _ = model.policy.obs_to_tensor(obs)
         if VALUE_MODEL_NAMES != []:
             # Initialize a variable to track the maximum value and its index
@@ -106,9 +115,27 @@ for episode in range(NUM_EPISODE):
                 else:
                     print(f"{vmn['actor']}'s policy value by TD: {value}")
 
-        if AC_MODEL_NAME != None:
-            print(AC_MODEL_NAME+ "'s policy value by MC:", ac_model.policy.predict_values(obs).item())
-        if VALUE_MODEL_NAMES != [] or AC_MODEL_NAME != None:
+        if AC_MODEL_NAMES != []:
+            # Initialize a variable to track the maximum value and its index
+            max_value = -np.inf
+            max_index = -1
+            values = []
+            # First, identify the maximum value and its index
+            for i in range(len(AC_MODEL_NAMES)):
+                current_value = ac_models[i].policy.predict_values(obs).item()
+                values.append(current_value)
+                if current_value > max_value:
+                    max_value = current_value
+                    max_index = i
+            # Then, print the values, marking the one with the maximum value in red
+            for i, acn in enumerate(AC_MODEL_NAMES):
+                value = values[i]
+                if i == max_index:
+                    # Mark the maximum value in red
+                    print(f"\033[91m{acn}'s policy value by TD: {value}\033[0m")
+                else:
+                    print(f"{acn}'s policy value by TD: {value}")
+        if VALUE_MODEL_NAMES != [] or AC_MODEL_NAMES != []:
             print("========================================================")
             input()
         prev_mask = env.get_action_mask()
