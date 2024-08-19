@@ -418,7 +418,7 @@ class TRMaskablePPOMCIndi(OnPolicyAlgorithm):
 
                     delta_value = rollout_data.returns - max_last_stage_values
                     lambd = th.mean(delta_value)
-                    lambd = th.clip(lambd, min=-0.5, max=0) + 3e-3
+                    lambd = th.clip(lambd, min=-0.5, max=-5e-3)
                     lambd = 0.6 * th.log(-200 * lambd)
                     delta_value_clipped = th.clip(delta_value, min=-0.5, max=0)
                     weight = delta_value_clipped / th.mean(delta_value_clipped)
