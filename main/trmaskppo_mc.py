@@ -421,7 +421,7 @@ class TRMaskablePPOMC(OnPolicyAlgorithm):
                     lambd = np.clip(lambd, a_min=-0.5, a_max=-5e-3)
                     lambd = max(0, 0.8 * np.log(-200 * lambd))
                 transfer_regularization = lambd * F.mse_loss(probs, chosen_last_stage_probs)
-                lambds.append(lambd.item())
+                lambds.append(lambd)
                 clip_range = 0.008 + 0.03 * lambd.item()
 
                 # clipped surrogate loss
