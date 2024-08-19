@@ -90,7 +90,7 @@ def main():
         )
         # Instantiate a PPO agent using CUDA.
         old_model_names = ['trained_models_cnn/snake21_s1_len3', 'trained_models_cnn/snake21_len80_max160_44000000_steps', 'trained_models_cnn/snake21_len300_please_success_38000000_steps', 'trained_models_cnn/snake21_len350loads_please_success_124000000_steps']
-        model = TRMaskablePPOMCIndi(
+        model = TRMaskablePPOMC(
             "CnnPolicy",
             env,
             old_model_names=old_model_names,

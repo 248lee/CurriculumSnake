@@ -14,7 +14,7 @@ import os
 if torch.backends.mps.is_available():
     MODEL_PATH = r"trained_models_cnn_mps/ppo_snake_final"
 else:
-    MODEL_PATH = r"trained_models_cnn/snake21_s1_len3_max70.zip"
+    MODEL_PATH = r"trained_models_cnn/snake21_s1_len3_max70_6000000_steps.zip"
 
 NUM_EPISODE = 500
 
@@ -43,12 +43,18 @@ directory = "./game_states"
 
 # Get the list of filenames in the specified directory
 state_name_list = [filename for filename in os.listdir(directory) if os.path.isfile(os.path.join(directory, filename))]
-state_name_list = ['len238_state_2024_08_18_17_32_54.obj']
+state_name_list = [
+            'len72_state_2024_08_13_10_53_01.obj',
+            'len85_state_2024_08_13_10_54_26.obj',
+            'len70_state_2024_08_13_10_52_34.obj',
+            'len93_state_2024_08_13_10_54_36.obj',
+            'len95_state_2024_08_13_10_54_42.obj',
+        ]
 
 if RENDER:
-    env = SnakeEnv(seed=seed, length = 3, is_grow=True, limit_step=True, silent_mode=False)
+    env = SnakeEnv(seed=seed, length = state_name_list, is_grow=True, limit_step=True, silent_mode=False)
 else:
-    env = SnakeEnv(seed=seed, length = 3, is_grow=True, limit_step=True, silent_mode=True)
+    env = SnakeEnv(seed=seed, length = state_name_list, is_grow=True, limit_step=True, silent_mode=True)
 
 # Load the trained model
 model = MaskablePPO.load(MODEL_PATH)

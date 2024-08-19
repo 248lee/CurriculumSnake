@@ -23,6 +23,7 @@ from sb3_contrib.ppo_mask.policies import CnnPolicy, MlpPolicy, MultiInputPolicy
 SelfMaskablePPO = TypeVar("SelfMaskablePPO", bound="MaskablePPO")
 old_models = []
 dvn_models = []
+mc_models = []
 
 
 class TRMaskablePPOMC(OnPolicyAlgorithm):
@@ -84,6 +85,7 @@ class TRMaskablePPOMC(OnPolicyAlgorithm):
         env: Union[GymEnv, str],
         old_model_names: List[str] = None,
         dvn_model_names: List[str] = None,
+        mc_model_names: List[str] = None,
         learning_rate: Union[float, Schedule] = 3e-4,
         n_steps: int = 2048,
         batch_size: Optional[int] = 64,
@@ -143,6 +145,7 @@ class TRMaskablePPOMC(OnPolicyAlgorithm):
         self.target_kl = target_kl
         self.old_model_names = old_model_names
         self.dvn_model_names = dvn_model_names
+        self.mc_model_names = mc_model_names
 
         if _init_setup_model:
             self._setup_model()
@@ -334,12 +337,21 @@ class TRMaskablePPOMC(OnPolicyAlgorithm):
                 dvn_model.eval()
                 dvn_models.append(dvn_model)
 
+        global mc_models
+        if len(self.mc_model_names) != 0 and len(mc_models) == 0:
+            for i, mc_model_name in enumerate(self.mc_model_names):
+                mc_model = MaskablePPO.load(mc_model_name, env=self.env)
+                mc_model.policy.set_training_mode(False)
+                mc_models.append(mc_model)
+
         # Switch to train mode (this affects batch norm / dropout)
         self.policy.set_training_mode(True)
         for old_model in old_models:
             old_model.policy.set_training_mode(False)
         for dvn_model in dvn_models:
             dvn_model.eval()
+        for mc_model in mc_models:
+            mc_model.policy.set_training_mode(False)
         # Update optimizer learning rate
         self._update_learning_rate(self.policy.optimizer)
         # Compute current clip range
@@ -385,9 +397,14 @@ class TRMaskablePPOMC(OnPolicyAlgorithm):
                 probs = self.policy.get_distribution(rollout_data.observations, rollout_data.action_masks).distribution.probs
                 with th.no_grad():
                     last_stage_valueses = []
-                    for dvn_model in dvn_models:
-                        last_stage_values = dvn_model(rollout_data.observations)  # shape: (batchsize, 1)
-                        last_stage_valueses.append(last_stage_values)
+                    if len(self.dvn_model_names) != 0:
+                        for dvn_model in dvn_models:
+                            last_stage_values = dvn_model(rollout_data.observations)  # shape: (batchsize, 1)
+                            last_stage_valueses.append(last_stage_values)
+                    if len(self.mc_model_names) != 0:
+                        for mc_model in mc_models:
+                            last_stage_values = mc_model.policy.predict_values(rollout_data.observations)
+                            last_stage_valueses.append(last_stage_values)
                     last_stage_valueses = th.concat(last_stage_valueses, dim=-1)  # shape: (batchsize, num_of_dvn_models)
                     max_last_stage_values, chosen_model_indices = th.max(last_stage_valueses, dim=-1)  # shapes: (batchsize)
 
@@ -400,8 +417,9 @@ class TRMaskablePPOMC(OnPolicyAlgorithm):
                     chosen_last_stage_probs = last_stage_probses[chosen_model_indices, th.tensor(range(len(chosen_model_indices))), :]
 
                     delta_value = rollout_data.returns - max_last_stage_values
-                    lambd = th.mean(delta_value) + 3e-3
-                    lambd = th.clip(lambd, min=-0.3, max=0) * (-16)
+                    lambd = th.mean(delta_value)
+                    lambd = th.clip(lambd, min=-0.5, max=0) + 3e-3
+                    lambd = 0.6 * th.log(-200 * lambd)
                 transfer_regularization = lambd * F.mse_loss(probs, chosen_last_stage_probs)
                 lambds.append(lambd.item())
                 clip_range = 0.008 + 0.03 * lambd.item()
