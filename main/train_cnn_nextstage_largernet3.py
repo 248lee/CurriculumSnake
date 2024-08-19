@@ -8,6 +8,7 @@ from stable_baselines3.common.vec_env import SubprocVecEnv
 from stable_baselines3.common.callbacks import CheckpointCallback
 
 from trmaskppo import TRMaskablePPO
+from trmaskppo_mc_indi import TRMaskablePPOMCIndi
 from trmaskppo_indi import TRMaskablePPOIndi
 from sb3_contrib.common.wrappers import ActionMasker
 
@@ -94,11 +95,13 @@ def main():
             net_arch=dict(pi=[512, 256, 128], vf=[128, 32])
         )
         # Instantiate a PPO agent using CUDA.
-        model = TRMaskablePPOIndi(
+        old_model_names = ['trained_models_cnn/snake21_s1_len3_max70']
+        model = TRMaskablePPOMCIndi(
             "CnnPolicy",
             env,
-            old_model_name="trained_models_cnn/snake21_s1_len3",
-            dvn_model_name="trained_models_value/DVN_len3tolen80_final.zip",
+            old_model_names=old_model_names,
+            dvn_model_names=[],
+            mc_model_names=['trained_models_cnn/mc_value_evaluation_len3_in_len80'],
             device="cuda",
             verbose=1,
             n_steps=2048,

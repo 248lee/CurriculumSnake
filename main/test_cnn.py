@@ -14,7 +14,7 @@ import os
 if torch.backends.mps.is_available():
     MODEL_PATH = r"trained_models_cnn_mps/ppo_snake_final"
 else:
-    MODEL_PATH = r"trained_models_cnn/snake21_len300_please_success_38000000_steps.zip"
+    MODEL_PATH = r"trained_models_cnn/snake21_s1_len3_max70.zip"
 
 NUM_EPISODE = 500
 
@@ -29,10 +29,10 @@ VALUE_MODEL_NAMES = [
     # {"actor": "random_feature_extractor.zip", "critic": "trained_models_value/DVN_len80toBOSS_please_success_final.zip"},
 ]
 AC_MODEL_NAMES = [
-    "trained_models_cnn/mc_value_evaluation_len3_in_BOSS",
-    "trained_models_cnn/mc_value_evaluation_len80_in_BOSS",
-    "trained_models_cnn/mc_value_evaluation_len300_in_BOSS",
-    "trained_models_cnn/mc_value_evaluation_loads_in_BOSS",
+    # "trained_models_cnn/mc_value_evaluation_len3_in_BOSS",
+    # "trained_models_cnn/mc_value_evaluation_len80_in_BOSS",
+    # "trained_models_cnn/mc_value_evaluation_len300_in_BOSS",
+    # "trained_models_cnn/mc_value_evaluation_loads_in_BOSS",
 ]
 
 seed = random.randint(0, 1e9)
@@ -46,9 +46,9 @@ state_name_list = [filename for filename in os.listdir(directory) if os.path.isf
 state_name_list = ['len238_state_2024_08_18_17_32_54.obj']
 
 if RENDER:
-    env = SnakeEnv(seed=seed, length = state_name_list, is_grow=True, limit_step=True, silent_mode=False)
+    env = SnakeEnv(seed=seed, length = 3, is_grow=True, limit_step=True, silent_mode=False)
 else:
-    env = SnakeEnv(seed=seed, length = state_name_list, is_grow=True, limit_step=True, silent_mode=True)
+    env = SnakeEnv(seed=seed, length = 3, is_grow=True, limit_step=True, silent_mode=True)
 
 # Load the trained model
 model = MaskablePPO.load(MODEL_PATH)
@@ -85,10 +85,10 @@ for episode in range(NUM_EPISODE):
     retry_limit = 9
     print(f"=================== Episode {episode + 1} ==================")
     while not (done or truncate):
-        if info != None and info["snake_size"] >= 2:
-            is_save = input()
-            if is_save == 's':
-                env.save_state()
+        # if info != None and info["snake_size"] >= 2:
+        #     is_save = input()
+        #     if is_save == 's':
+        #         env.save_state()
 
         model.policy.set_training_mode(False)
         action, _ = model.predict(obs, action_masks=env.get_action_mask())
