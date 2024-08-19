@@ -38,16 +38,13 @@ def linear_schedule(initial_value, final_value=0.0):
 def make_env(seed=0):
     def _init():
         state_name_list = [
-            'len350_state_2024_08_15_07_51_07.obj',
-            'len352_state_2024_08_15_07_46_41.obj',
-            'len353_state_2024_08_15_08_46_43.obj',
-            'len356_state_2024_08_15_08_59_36.obj',
-            'len358_state_2024_08_15_08_47_30.obj',
-            'len359_state_2024_08_15_09_00_32.obj',
-            'len366_state_2024_08_15_08_48_32.obj',
-            'len369_state_2024_08_15_08_49_35.obj'
+            'len72_state_2024_08_13_10_53_01.obj',
+            'len85_state_2024_08_13_10_54_26.obj',
+            'len70_state_2024_08_13_10_52_34.obj',
+            'len93_state_2024_08_13_10_54_36.obj',
+            'len95_state_2024_08_13_10_54_42.obj',
         ]
-        env = SnakeEnv(seed=seed, length=80, max_length=160, is_grow=True)
+        env = SnakeEnv(seed=seed, length=state_name_list, max_length=160, is_grow=True)
         env = ActionMasker(env, SnakeEnv.get_action_mask)
         env = Monitor(env)
         env.seed(seed)
@@ -83,7 +80,7 @@ def main():
             tensorboard_log=LOG_DIR,
             policy_kwargs=policy_kwargs
         )
-    model.set_old_policy_model("trained_models_cnn/snake21_s1_len3_max70")
+    model.set_old_policy_model("trained_models_cnn/snake21_s1_len3_max70_60000000_steps")
 
     # Set the save directory
     if torch.backends.mps.is_available():
