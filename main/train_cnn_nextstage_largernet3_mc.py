@@ -94,6 +94,7 @@ def main():
             "CnnPolicy",
             env,
             old_model_names=old_model_names,
+            dvn_model_names=[],
             mc_model_names=['trained_models_cnn/mc_value_evaluation_len3_in_BOSS', 'trained_models_cnn/mc_value_evaluation_len80_in_BOSS', 'trained_models_cnn/mc_value_evaluation_len300_in_BOSS', 'trained_models_cnn/mc_value_evaluation_loads_in_BOSS'],
             device="cuda",
             verbose=1,

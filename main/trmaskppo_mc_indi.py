@@ -338,7 +338,7 @@ class TRMaskablePPOMCIndi(OnPolicyAlgorithm):
                 dvn_models.append(dvn_model)
 
         global mc_models
-        if len(self.mc_model_names) != 0 and len(value_models) == 0:
+        if len(self.mc_model_names) != 0 and len(mc_models) == 0:
             for i, mc_model_name in enumerate(self.mc_model_names):
                 mc_model = MaskablePPO.load(mc_model_name, env=self.env)
                 mc_model.policy.set_training_mode(False)
@@ -397,7 +397,7 @@ class TRMaskablePPOMCIndi(OnPolicyAlgorithm):
                 probs = self.policy.get_distribution(rollout_data.observations, rollout_data.action_masks).distribution.probs
                 with th.no_grad():
                     last_stage_valueses = []
-                    if len(self.dvn_model_names) != 0
+                    if len(self.dvn_model_names) != 0:
                         for dvn_model in dvn_models:
                             last_stage_values = dvn_model(rollout_data.observations)  # shape: (batchsize, 1)
                             last_stage_valueses.append(last_stage_values)
@@ -418,7 +418,8 @@ class TRMaskablePPOMCIndi(OnPolicyAlgorithm):
 
                     delta_value = rollout_data.returns - max_last_stage_values
                     lambd = th.mean(delta_value) + 3e-3
-                    lambd = th.clip(lambd, min=-0.5, max=0) * (-10)
+                    lambd = th.clip(lambd, min=-0.5, max=0)
+                    lambd = -(th.exp(4 * lambd) - 1)
                     delta_value_clipped = th.clip(delta_value, min=-0.5, max=0)
                     weight = delta_value_clipped / th.mean(delta_value_clipped)
                     weight = weight.unsqueeze(-1)  # shape: (512, 1)
