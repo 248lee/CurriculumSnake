@@ -14,11 +14,11 @@ import os
 if torch.backends.mps.is_available():
     MODEL_PATH = r"trained_models_cnn_mps/ppo_snake_final"
 else:
-    MODEL_PATH = r"trained_models_cnn/snake21_s1_len3_max70_6000000_steps.zip"
+    MODEL_PATH = r"trained_models_cnn/snake21_len80_max160_38000000_steps.zip"
 
-NUM_EPISODE = 500
+NUM_EPISODE = 100
 
-RENDER = True
+RENDER = False
 FRAME_DELAY = 0.01 # 0.01 fast, 0.05 slow
 ROUND_DELAY = 5
 VALUE_MODEL_NAMES = [

@@ -418,8 +418,8 @@ class TRMaskablePPOMC(OnPolicyAlgorithm):
 
                     delta_value = rollout_data.returns - max_last_stage_values
                     lambd = th.mean(delta_value).item()
-                    lambd = np.clip(lambd, a_min=-0.5, a_max=-3e-2)
-                    lambd = max(0, 0.8 * np.log(-32 * lambd).item())
+                    lambd = np.clip(lambd, a_min=-0.5, a_max=0) * -50
+                    lambd = lambd.item()
                 transfer_regularization = lambd * F.mse_loss(probs, chosen_last_stage_probs)
                 lambds.append(lambd)
                 clip_range = 0.008 + 0.03 * lambd
