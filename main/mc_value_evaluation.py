@@ -84,7 +84,7 @@ def main():
             tensorboard_log=LOG_DIR,
             policy_kwargs=policy_kwargs
         )
-    model.set_old_policy_model("trained_models_cnn/snake21_len80_max160_74000000_steps")
+    model.set_old_policy_model("trained_models_cnn/snake21_len80_max160_42000000_steps")
 
     # Set the save directory
     if torch.backends.mps.is_available():

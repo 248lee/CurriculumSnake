@@ -19,7 +19,7 @@ if torch.backends.mps.is_available():
 else:
     NUM_ENV = 32
 LOG_DIR = "logs"
-ExperimentName = "snake21_len80_max160"
+ExperimentName = "snake21_len180_max268"
 
 os.makedirs(LOG_DIR, exist_ok=True)
 
@@ -91,7 +91,7 @@ def main():
             net_arch=dict(pi=[512, 256, 128], vf=[128, 32])
         )
         # Instantiate a PPO agent using CUDA.
-        old_model_names = ['trained_models_cnn/snake21_len80_max160_74000000_steps']
+        old_model_names = ['trained_models_cnn/snake21_len80_max160_42000000_steps']
         model = TRMaskablePPOMCIndi(
             "CnnPolicy",
             env,
