@@ -424,7 +424,7 @@ class TRMaskablePPOMCIndi(OnPolicyAlgorithm):
                     weight = weight.unsqueeze(-1)  # shape: (512, 1)
                 transfer_regularization = lambd * th.mean(th.multiply(weight, (probs - chosen_last_stage_probs)**2))#F.mse_loss(probs, chosen_last_stage_probs)
                 lambds.append(lambd)
-                clip_range = 0.0008 + 0.008 * self._current_progress_remaining + 0.03 * lambd
+                clip_range = min(0.1, 0.0008 + 0.008 * self._current_progress_remaining + 0.003 * lambd)
 
                 # clipped surrogate loss
                 policy_loss_1 = advantages * ratio

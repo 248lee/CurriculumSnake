@@ -17,7 +17,7 @@ if torch.backends.mps.is_available():
 else:
     NUM_ENV = 50
 LOG_DIR = "logs"
-ExperimentName = "mc_value_evaluation_len3_in_BOSS"
+ExperimentName = "mc_value_evaluation_len180max268_in_BOSS"
 from network_structures import CustomFeatureExtractorCNN
 
 os.makedirs(LOG_DIR, exist_ok=True)
@@ -78,7 +78,7 @@ def main():
             tensorboard_log=LOG_DIR,
             policy_kwargs=policy_kwargs
         )
-    model.set_old_policy_model("trained_models_cnn/snake21_s1_len3")
+    model.set_old_policy_model("trained_models_cnn/snake21_len180_max268_52000000_steps")
 
     # Set the save directory
     if torch.backends.mps.is_available():
