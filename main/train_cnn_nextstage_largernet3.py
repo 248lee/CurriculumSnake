@@ -9,6 +9,7 @@ from stable_baselines3.common.callbacks import CheckpointCallback
 
 from trmaskppo import TRMaskablePPO
 from trmaskppo_mc import TRMaskablePPOMC
+from trmaskppo_mc_indi import TRMaskablePPOMCIndi
 from sb3_contrib.common.wrappers import ActionMasker
 
 from snake_game_custom_wrapper_cnn import SnakeEnv
@@ -92,7 +93,7 @@ def main():
         )
         # Instantiate a PPO agent using CUDA.
         old_model_names = ['trained_models_cnn/snake21_s1_len3']
-        model = TRMaskablePPOMC(
+        model = TRMaskablePPOMCIndi(
             "CnnPolicy",
             env,
             old_model_names=old_model_names,
