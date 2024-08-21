@@ -39,13 +39,12 @@ def linear_schedule(initial_value, final_value=0.0):
 def make_env(seed=0):
     def _init():
         state_name_list = [
-            'len72_state_2024_08_13_10_53_01.obj',
-            'len85_state_2024_08_13_10_54_26.obj',
-            'len70_state_2024_08_13_10_52_34.obj',
-            'len93_state_2024_08_13_10_54_36.obj',
-            'len95_state_2024_08_13_10_54_42.obj',
+            "len180_state_2024_08_18_17_30_47.obj",
+            "len182_state_2024_08_18_17_31_10.obj",
+            "len183_state_2024_08_18_17_31_36.obj",
+            "len189_state_2024_08_18_17_31_52.obj",
         ]
-        env = SnakeEnv(seed=seed, length=state_name_list, max_length=195, is_grow=True)
+        env = SnakeEnv(seed=seed, length=state_name_list, max_length=268, is_grow=True, silent_mode=True)
         env = ActionMasker(env, SnakeEnv.get_action_mask)
         env = Monitor(env)
         env.seed(seed)
@@ -92,13 +91,13 @@ def main():
             net_arch=dict(pi=[512, 256, 128], vf=[128, 32])
         )
         # Instantiate a PPO agent using CUDA.
-        old_model_names = ['trained_models_cnn/snake21_s1_len3']
+        old_model_names = ['trained_models_cnn/snake21_len80_max160_74000000_steps']
         model = TRMaskablePPOMCIndi(
             "CnnPolicy",
             env,
             old_model_names=old_model_names,
             dvn_model_names=[],
-            mc_model_names=['trained_models_cnn/mc_value_evaluation_len3_in_len80'],
+            mc_model_names=['trained_models_cnn/mc_value_evaluation_len80_in_len180max268'],
             device="cuda",
             verbose=1,
             n_steps=2048,

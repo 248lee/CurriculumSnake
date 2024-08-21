@@ -72,7 +72,8 @@ class SnakeEnv(gym.Env):
             # reward = self.max_growth * 0.1
             reward = 0.5
             self.done = True
-            # if not self.silent_mode:
+            if not self.silent_mode:
+                self.render()
             #     self.game.sound_victory.play()
             return obs, reward, self.done, False, info
         
@@ -90,10 +91,12 @@ class SnakeEnv(gym.Env):
             # reward = reward * 0.002  # original: * 0.1
             if info['snake_size'] <= 50:
                 reward = -0.5
-            elif info['snake_size'] <= 360:
+            elif info['snake_size'] <= 350:
                 reward = -1
-            else:
+            elif info['snake_size'] <= 375:
                 reward = -1.5
+            else:
+                reward = -2.0
             return obs, reward, self.done, False, info
           
         elif info["food_obtained"]: # Food eaten. Reward boost on snake size.

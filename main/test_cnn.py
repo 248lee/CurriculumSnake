@@ -14,11 +14,11 @@ import os
 if torch.backends.mps.is_available():
     MODEL_PATH = r"trained_models_cnn_mps/ppo_snake_final"
 else:
-    MODEL_PATH = r"trained_models_cnn/snake21_len80_max160_38000000_steps.zip"
+    MODEL_PATH = r"trained_models_cnn/snake21_BOSS_olease_success_128000000_steps.zip"
 
-NUM_EPISODE = 100
+NUM_EPISODE = 300
 
-RENDER = False
+RENDER = True
 FRAME_DELAY = 0.01 # 0.01 fast, 0.05 slow
 ROUND_DELAY = 5
 VALUE_MODEL_NAMES = [
@@ -44,11 +44,11 @@ directory = "./game_states"
 # Get the list of filenames in the specified directory
 state_name_list = [filename for filename in os.listdir(directory) if os.path.isfile(os.path.join(directory, filename))]
 state_name_list = [
-            'len72_state_2024_08_13_10_53_01.obj',
-            'len85_state_2024_08_13_10_54_26.obj',
-            'len70_state_2024_08_13_10_52_34.obj',
-            'len93_state_2024_08_13_10_54_36.obj',
-            'len95_state_2024_08_13_10_54_42.obj',
+            'len334_state_2024_08_18_17_35_40.obj',
+            'len350_state_2024_08_15_07_51_07.obj',
+            'len356_state_2024_08_15_08_59_36.obj',
+            'len366_state_2024_08_15_08_48_32.obj',
+            'len369_state_2024_08_15_08_49_35.obj',
         ]
 
 if RENDER:
