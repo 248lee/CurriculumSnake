@@ -82,14 +82,14 @@ def main():
         lr_schedule = linear_schedule(2.5e-4, 2.5e-6)
         # clip_range_schedule = linear_schedule(0.150, 0.025)
         import torch as th
-        from network_structures import CustomFeatureExtractorCNN
+        from network_structures import Stage2CustomFeatureExtractorCNN
         policy_kwargs = dict(
-            features_extractor_class=CustomFeatureExtractorCNN,
+            features_extractor_class=Stage2CustomFeatureExtractorCNN,
             activation_fn=th.nn.ReLU,
-            net_arch=dict(pi=[512, 256, 128], vf=[128, 32])
+            net_arch=dict(pi=[512, 256, 128], vf=[256, 32])
         )
         # Instantiate a PPO agent using CUDA.
-        old_model_names = ['trained_models_cnn/snake21_s1_len3', 'trained_models_cnn/snake21_len80_max160_44000000_steps', 'trained_models_cnn/snake21_len300_please_success_38000000_steps', 'trained_models_cnn/snake21_len350loads_please_success_124000000_steps']
+        old_model_names = ['trained_models_cnn/snake21_s1_len3', 'trained_models_cnn/snake21_len80_max160_42000000_steps', 'trained_models_cnn/snake21_len300_please_success_38000000_steps', 'trained_models_cnn/snake21_len350loads_please_success_124000000_steps']
         model = TRMaskablePPOMC(
             "CnnPolicy",
             env,
