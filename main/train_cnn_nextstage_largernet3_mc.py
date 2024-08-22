@@ -18,7 +18,7 @@ if torch.backends.mps.is_available():
 else:
     NUM_ENV = 32
 LOG_DIR = "logs"
-ExperimentName = "snake21_BOSS_olease_success"
+ExperimentName = "snake21_BOSS_please_success"
 
 os.makedirs(LOG_DIR, exist_ok=True)
 
@@ -86,16 +86,29 @@ def main():
         policy_kwargs = dict(
             features_extractor_class=Stage2CustomFeatureExtractorCNN,
             activation_fn=th.nn.ReLU,
-            net_arch=dict(pi=[512, 256, 128], vf=[256, 32])
+            net_arch=dict(pi=[1024, 512, 256], vf=[512, 32])
         )
         # Instantiate a PPO agent using CUDA.
-        old_model_names = ['trained_models_cnn/snake21_s1_len3', 'trained_models_cnn/snake21_len80_max160_42000000_steps', 'trained_models_cnn/snake21_len300_please_success_38000000_steps', 'trained_models_cnn/snake21_len350loads_please_success_124000000_steps']
+        old_model_names = [
+            'trained_models_cnn/snake21_s1_len3',
+            'trained_models_cnn/snake21_len80_max160_42000000_steps',
+            'trained_models_cnn/snake21_len180_max268_58000000_steps',
+            'trained_models_cnn/snake21_len300_please_success_38000000_steps',
+            'trained_models_cnn/snake21_len350loads_please_success_124000000_steps'
+        ]
+        mc_model_names = [
+            'trained_models_cnn/mc_value_evaluation_len3_in_BOSS',
+            'trained_models_cnn/mc_value_evaluation_len80_in_BOSS',
+            'trained_models_cnn/mc_value_evaluation_len180max268_in_BOSS',
+            'trained_models_cnn/mc_value_evaluation_len300_in_BOSS',
+            'trained_models_cnn/mc_value_evaluation_loads_in_BOSS'
+        ]
         model = TRMaskablePPOMC(
             "CnnPolicy",
             env,
             old_model_names=old_model_names,
             dvn_model_names=[],
-            mc_model_names=['trained_models_cnn/mc_value_evaluation_len3_in_BOSS', 'trained_models_cnn/mc_value_evaluation_len80_in_BOSS', 'trained_models_cnn/mc_value_evaluation_len300_in_BOSS', 'trained_models_cnn/mc_value_evaluation_loads_in_BOSS'],
+            mc_model_names=mc_model_names,
             device="cuda",
             verbose=1,
             n_steps=2048,
