@@ -55,9 +55,9 @@ class Stage2CustomFeatureExtractorCNN(BaseFeaturesExtractor):
         self.NatureCNN = nn.Sequential(
             nn.Conv2d(n_input_channels, 96, kernel_size=8, stride=4),
             nn.ReLU(),
-            nn.Conv2d(96, 152, kernel_size=4, stride=2),
+            nn.Conv2d(96, 128, kernel_size=4, stride=2),
             nn.ReLU(),
-            nn.Conv2d(152, 96, kernel_size=3, stride=2),
+            nn.Conv2d(128, 152, kernel_size=3, stride=2),
             nn.ReLU(),
             nn.Flatten(),
         )
@@ -65,7 +65,12 @@ class Stage2CustomFeatureExtractorCNN(BaseFeaturesExtractor):
             n_flatten = self.NatureCNN(th.as_tensor(observation_space.sample()[None]).float()).shape[1]
         self.Linea = nn.Sequential(
             nn.BatchNorm1d(num_features=n_flatten, affine=False),
-            nn.Linear(in_features=n_flatten, out_features=features_dim)
+            nn.Linear(in_features=n_flatten, out_features=1024),
+            nn.ReLU(),
+            nn.BatchNorm1d(num_features=1024),
+            nn.Linear(in_features=1024, out_features=features_dim),
+            nn.ReLU(),
+            nn.BatchNorm1d(num_features=features_dim),
         )
 
     def forward(self, observations: th.Tensor) -> th.Tensor:
