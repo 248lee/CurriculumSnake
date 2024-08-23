@@ -14,11 +14,11 @@ import os
 if torch.backends.mps.is_available():
     MODEL_PATH = r"trained_models_cnn_mps/ppo_snake_final"
 else:
-    MODEL_PATH = r"trained_models_cnn/snake21_BOSS_olease_success_128000000_steps.zip"
+    MODEL_PATH = r"trained_models_cnn/snake21_BOSS_please_success_108000000_steps.zip"
 
-NUM_EPISODE = 300
+NUM_EPISODE = 500
 
-RENDER = True
+RENDER = False
 FRAME_DELAY = 0.01 # 0.01 fast, 0.05 slow
 ROUND_DELAY = 5
 VALUE_MODEL_NAMES = [
@@ -49,9 +49,9 @@ state_name_list = [
         ]
 
 if RENDER:
-    env = SnakeEnv(seed=seed, length = state_name_list, is_grow=True, limit_step=True, silent_mode=False)
+    env = SnakeEnv(seed=seed, length = 3, is_grow=True, limit_step=True, silent_mode=False)
 else:
-    env = SnakeEnv(seed=seed, length = state_name_list, is_grow=True, limit_step=True, silent_mode=True)
+    env = SnakeEnv(seed=seed, length = 3, is_grow=True, limit_step=True, silent_mode=True)
 
 # Load the trained model
 model = MaskablePPO.load(MODEL_PATH)
@@ -88,10 +88,10 @@ for episode in range(NUM_EPISODE):
     retry_limit = 9
     print(f"=================== Episode {episode + 1} ==================")
     while not (done or truncate):
-        if info != None and info["snake_size"] >= 390:
-            is_save = input()
-            if is_save == 's':
-                env.save_state()
+        # if info != None and info["snake_size"] >= 390:
+        #     is_save = input()
+        #     if is_save == 's':
+        #         env.save_state()
 
         model.policy.set_training_mode(False)
         action, _ = model.predict(obs, action_masks=env.get_action_mask())
