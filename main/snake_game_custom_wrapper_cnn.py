@@ -17,7 +17,7 @@ class SnakeEnv(gym.Env):
         
         self.observation_space = gym.spaces.Box(
             low=0, high=255,
-            shape=(board_size * 4, board_size * 4, 3),
+            shape=(board_size, board_size, 3),
             dtype=np.uint8
         )
 
@@ -198,7 +198,7 @@ class SnakeEnv(gym.Env):
         obs[self.game.food] = [0, 0, 255]
 
         # Enlarge the observation x7
-        obs = np.repeat(np.repeat(obs, 4, axis=0), 4, axis=1)
+        # obs = np.repeat(np.repeat(obs, 4, axis=0), 4, axis=1)
 
         return obs
 

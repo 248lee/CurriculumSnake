@@ -329,7 +329,7 @@ class TRMaskablePPOMC(OnPolicyAlgorithm):
         # Log the current learning rate
         self.logger.record("train/learning_rate", self.lr_schedule(self._current_progress_remaining))
         lr = self.lr_schedule(self._current_progress_remaining)
-        if lambd <= 0.05:
+        if lambd <= 0.0007:
             lr *= 6.6
         if not isinstance(optimizers, list):
             optimizers = [optimizers]
@@ -434,7 +434,7 @@ class TRMaskablePPOMC(OnPolicyAlgorithm):
                     chosen_last_stage_probs = last_stage_probses[chosen_model_indices, th.tensor(range(len(chosen_model_indices))), :]
 
                     delta_value = rollout_data.returns - max_last_stage_values
-                    lambd = th.mean(delta_value).item() + 1e-2
+                    lambd = th.mean(delta_value).item() + 3.69e-2
                     lambd = np.clip(lambd, a_min=-0.5, a_max=0) * -10
                     lambd = lambd.item()
                 transfer_regularization = lambd * F.mse_loss(probs, chosen_last_stage_probs)

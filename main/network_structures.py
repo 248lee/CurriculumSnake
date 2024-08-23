@@ -21,9 +21,9 @@ class CustomFeatureExtractorCNN(BaseFeaturesExtractor):
         super().__init__(observation_space, features_dim)
         n_input_channels = observation_space.shape[0]
         self.NatureCNN = nn.Sequential(
-            nn.Conv2d(n_input_channels, 64, kernel_size=8, stride=4),
+            nn.Conv2d(n_input_channels, 64, kernel_size=3, stride=1),
             nn.ReLU(),
-            nn.Conv2d(64, 96, kernel_size=4, stride=2),
+            nn.Conv2d(64, 96, kernel_size=3, stride=2),
             nn.ReLU(),
             nn.Conv2d(96, 64, kernel_size=3, stride=2),
             nn.ReLU(),
@@ -31,6 +31,7 @@ class CustomFeatureExtractorCNN(BaseFeaturesExtractor):
         )
         with th.no_grad():
             n_flatten = self.NatureCNN(th.as_tensor(observation_space.sample()[None]).float()).shape[1]
+            input(n_flatten)
         self.Linea = nn.Sequential(
             nn.BatchNorm1d(num_features=n_flatten, affine=False),
             nn.Linear(in_features=n_flatten, out_features=features_dim)
@@ -53,17 +54,16 @@ class Stage2CustomFeatureExtractorCNN(BaseFeaturesExtractor):
         super().__init__(observation_space, features_dim)
         n_input_channels = observation_space.shape[0]
         self.NatureCNN = nn.Sequential(
-            nn.Conv2d(n_input_channels, 96, kernel_size=4, stride=2),
+            nn.Conv2d(n_input_channels, 96, kernel_size=3, stride=1),
             nn.ReLU(),
-            nn.Conv2d(96, 128, kernel_size=4, stride=3),
+            nn.Conv2d(96, 128, kernel_size=2, stride=1),
             nn.ReLU(),
-            nn.Conv2d(128, 152, kernel_size=3, stride=3),
+            nn.Conv2d(128, 152, kernel_size=2, stride=1),
             nn.ReLU(),
             nn.Flatten(),
         )
         with th.no_grad():
             n_flatten = self.NatureCNN(th.as_tensor(observation_space.sample()[None]).float()).shape[1]
-            input(n_flatten)
         self.Linea = nn.Sequential(
             nn.BatchNorm1d(num_features=n_flatten, affine=False),
             nn.Linear(in_features=n_flatten, out_features=1024),
