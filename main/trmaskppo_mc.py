@@ -8,7 +8,7 @@ from stable_baselines3.common.callbacks import BaseCallback
 from stable_baselines3.common.on_policy_algorithm import OnPolicyAlgorithm
 from stable_baselines3.common.policies import BasePolicy
 from stable_baselines3.common.type_aliases import GymEnv, MaybeCallback, Schedule
-from stable_baselines3.common.utils import explained_variance, get_schedule_fn, obs_as_tensor
+from stable_baselines3.common.utils import explained_variance, get_schedule_fn, obs_as_tensor, update_learning_rate
 from stable_baselines3.common.vec_env import VecEnv
 from torch.nn import functional as F
 from sb3_contrib import MaskablePPO
@@ -318,6 +318,24 @@ class TRMaskablePPOMC(OnPolicyAlgorithm):
         """
         return self.policy.predict(observation, state, episode_start, deterministic, action_masks=action_masks)
 
+    def _update_learning_rate(self, lambd, optimizers: Union[List[th.optim.Optimizer], th.optim.Optimizer]) -> None:
+        """
+        Update the optimizers learning rate using the current learning rate schedule
+        and the current progress remaining (from 1 to 0).
+
+        :param optimizers:
+            An optimizer or a list of optimizers.
+        """
+        # Log the current learning rate
+        self.logger.record("train/learning_rate", self.lr_schedule(self._current_progress_remaining))
+        lr = self.lr_schedule(self._current_progress_remaining)
+        if lambd <= 0.05:
+            lr *= 6.6
+        if not isinstance(optimizers, list):
+            optimizers = [optimizers]
+        for optimizer in optimizers:
+            update_learning_rate(optimizer, lr)
+    
     def train(self) -> None:
         """
         Update policy using the currently gathered rollout buffer.
@@ -353,7 +371,6 @@ class TRMaskablePPOMC(OnPolicyAlgorithm):
         for mc_model in mc_models:
             mc_model.policy.set_training_mode(False)
         # Update optimizer learning rate
-        self._update_learning_rate(self.policy.optimizer)
         # Compute current clip range
         clip_range = self.clip_range(self._current_progress_remaining)  # type: ignore[operator]
         # Optional: clip range for the value function
@@ -417,13 +434,14 @@ class TRMaskablePPOMC(OnPolicyAlgorithm):
                     chosen_last_stage_probs = last_stage_probses[chosen_model_indices, th.tensor(range(len(chosen_model_indices))), :]
 
                     delta_value = rollout_data.returns - max_last_stage_values
-                    lambd = th.mean(delta_value).item()
+                    lambd = th.mean(delta_value).item() + 1e-2
                     lambd = np.clip(lambd, a_min=-0.5, a_max=0) * -10
                     lambd = lambd.item()
                 transfer_regularization = lambd * F.mse_loss(probs, chosen_last_stage_probs)
                 lambds.append(lambd)
                 clip_range = 0.0008 + 0.008 * self._current_progress_remaining + 0.03 * lambd
 
+                self._update_learning_rate(lambd, self.policy.optimizer)
                 # clipped surrogate loss
                 policy_loss_1 = advantages * ratio
                 policy_loss_2 = advantages * th.clamp(ratio, 1 - clip_range, 1 + clip_range)
