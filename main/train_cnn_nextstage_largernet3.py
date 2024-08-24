@@ -38,13 +38,18 @@ def linear_schedule(initial_value, final_value=0.0):
 
 def make_env(seed=0):
     def _init():
+        # Specify the directory
+        directory = "./game_states"
+
+        # Get the list of filenames in the specified directory
+        state_name_list = [filename for filename in os.listdir(directory) if os.path.isfile(os.path.join(directory, filename))]
         state_name_list = [
             "len180_state_2024_08_18_17_30_47.obj",
             "len182_state_2024_08_18_17_31_10.obj",
             "len183_state_2024_08_18_17_31_36.obj",
             "len189_state_2024_08_18_17_31_52.obj",
         ]
-        env = SnakeEnv(seed=seed, length=state_name_list, max_length=268, is_grow=True, silent_mode=True)
+        env = SnakeEnv(seed=seed, length=70, max_length=160, is_grow=True, silent_mode=True)
         env = ActionMasker(env, SnakeEnv.get_action_mask)
         env = Monitor(env)
         env.seed(seed)
@@ -88,16 +93,16 @@ def main():
         policy_kwargs = dict(
             features_extractor_class=CustomFeatureExtractorCNN,
             activation_fn=th.nn.ReLU,
-            net_arch=dict(pi=[512, 256, 128], vf=[128, 32])
+            net_arch=dict(pi=[512, 256, 128], vf=[256, 32])
         )
         # Instantiate a PPO agent using CUDA.
-        old_model_names = ['trained_models_cnn/snake21_len80_max160_42000000_steps']
+        old_model_names = ['coaches/snake_ob_len3_max130']
         model = TRMaskablePPOMC(
             "CnnPolicy",
             env,
             old_model_names=old_model_names,
             dvn_model_names=[],
-            mc_model_names=['trained_models_cnn/mc_value_evaluation_len80_in_len180max268'],
+            mc_model_names=['trained_models_cnn/mc_value_evaluation_len3_in_len70max160'],
             device="cuda",
             verbose=1,
             n_steps=2048,

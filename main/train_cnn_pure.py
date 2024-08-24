@@ -75,7 +75,7 @@ def main():
         )
     else:
         lr_schedule = linear_schedule(2.5e-4, 2.5e-6)
-        clip_range_schedule = linear_schedule(0.15, 0.02)
+        clip_range_schedule = linear_schedule(0.12, 0.02)
         # clip_range_schedule = linear_schedule(0.150, 0.025)
         import torch as th
         from network_structures import CustomFeatureExtractorCNN

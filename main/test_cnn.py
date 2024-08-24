@@ -14,9 +14,9 @@ import os
 if torch.backends.mps.is_available():
     MODEL_PATH = r"trained_models_cnn_mps/ppo_snake_final"
 else:
-    MODEL_PATH = r"trained_models_cnn/snake21_BOSS_please_success_56000000_steps.zip"
+    MODEL_PATH = r"coaches/snake_ob_len3_max130.zip"
 
-NUM_EPISODE = 500
+NUM_EPISODE = 300
 
 RENDER = True
 FRAME_DELAY = 0.01 # 0.01 fast, 0.05 slow
@@ -29,10 +29,7 @@ VALUE_MODEL_NAMES = [
     # {"actor": "random_feature_extractor.zip", "critic": "trained_models_value/DVN_len80toBOSS_please_success_final.zip"},
 ]
 AC_MODEL_NAMES = [
-    # "trained_models_cnn/mc_value_evaluation_len3_in_BOSS",
-    # "trained_models_cnn/mc_value_evaluation_len80_in_BOSS",
-    # "trained_models_cnn/mc_value_evaluation_len300_in_BOSS",
-    # "trained_models_cnn/mc_value_evaluation_loads_in_BOSS",
+    "trained_models_cnn/mc_value_evaluation_len3_in_len70max160_9000000_steps"
 ]
 
 seed = random.randint(0, 1e9)
@@ -49,9 +46,9 @@ state_name_list = [
         ]
 
 if RENDER:
-    env = SnakeEnv(seed=seed, length = 3, is_grow=True, limit_step=True, silent_mode=False)
+    env = SnakeEnv(seed=seed, length = 70, is_grow=True, limit_step=True, silent_mode=False)
 else:
-    env = SnakeEnv(seed=seed, length = 3, is_grow=True, limit_step=True, silent_mode=True)
+    env = SnakeEnv(seed=seed, length = 70, is_grow=True, limit_step=True, silent_mode=True)
 
 # Load the trained model
 model = MaskablePPO.load(MODEL_PATH)
