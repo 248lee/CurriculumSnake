@@ -19,7 +19,7 @@ if torch.backends.mps.is_available():
 else:
     NUM_ENV = 32
 LOG_DIR = "logs"
-ExperimentName = "snake21_len180_max268"
+ExperimentName = "snake21_len70_max160"
 
 os.makedirs(LOG_DIR, exist_ok=True)
 
@@ -93,7 +93,7 @@ def main():
         policy_kwargs = dict(
             features_extractor_class=CustomFeatureExtractorCNN,
             activation_fn=th.nn.ReLU,
-            net_arch=dict(pi=[512, 256, 128], vf=[256, 32])
+            net_arch=dict(pi=[256, 128, 64], vf=[256, 32])
         )
         # Instantiate a PPO agent using CUDA.
         old_model_names = ['coaches/snake_ob_len3_max130']

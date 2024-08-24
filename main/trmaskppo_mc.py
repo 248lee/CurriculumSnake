@@ -318,23 +318,23 @@ class TRMaskablePPOMC(OnPolicyAlgorithm):
         """
         return self.policy.predict(observation, state, episode_start, deterministic, action_masks=action_masks)
 
-    def _update_learning_rate(self, lambd, optimizers: Union[List[th.optim.Optimizer], th.optim.Optimizer]) -> None:
-        """
-        Update the optimizers learning rate using the current learning rate schedule
-        and the current progress remaining (from 1 to 0).
+    # def _update_learning_rate(self, lambd, optimizers: Union[List[th.optim.Optimizer], th.optim.Optimizer]) -> None:
+    #     """
+    #     Update the optimizers learning rate using the current learning rate schedule
+    #     and the current progress remaining (from 1 to 0).
 
-        :param optimizers:
-            An optimizer or a list of optimizers.
-        """
-        # Log the current learning rate
-        self.logger.record("train/learning_rate", self.lr_schedule(self._current_progress_remaining))
-        lr = self.lr_schedule(self._current_progress_remaining)
-        if lambd <= 0.00001:
-            lr *= 6.6
-        if not isinstance(optimizers, list):
-            optimizers = [optimizers]
-        for optimizer in optimizers:
-            update_learning_rate(optimizer, lr)
+    #     :param optimizers:
+    #         An optimizer or a list of optimizers.
+    #     """
+    #     # Log the current learning rate
+    #     self.logger.record("train/learning_rate", self.lr_schedule(self._current_progress_remaining))
+    #     lr = self.lr_schedule(self._current_progress_remaining)
+    #     if lambd <= 0.00001:
+    #         lr *= 6.6
+    #     if not isinstance(optimizers, list):
+    #         optimizers = [optimizers]
+    #     for optimizer in optimizers:
+    #         update_learning_rate(optimizer, lr)
     
     def train(self) -> None:
         """
@@ -441,7 +441,7 @@ class TRMaskablePPOMC(OnPolicyAlgorithm):
                 lambds.append(lambd)
                 clip_range = 0.02 + 0.03 * self._current_progress_remaining + 0.12 * lambd
 
-                self._update_learning_rate(lambd, self.policy.optimizer)
+                self._update_learning_rate(self.policy.optimizer)
                 # clipped surrogate loss
                 policy_loss_1 = advantages * ratio
                 policy_loss_2 = advantages * th.clamp(ratio, 1 - clip_range, 1 + clip_range)
