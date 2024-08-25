@@ -17,7 +17,7 @@ if torch.backends.mps.is_available():
 else:
     NUM_ENV = 32
 LOG_DIR = "logs"
-ExperimentName = "snake21_len80_max160"
+ExperimentName = "snake21_len180_max280"
 
 os.makedirs(LOG_DIR, exist_ok=True)
 
@@ -36,7 +36,18 @@ def linear_schedule(initial_value, final_value=0.0):
 
 def make_env(seed=0):
     def _init():
-        env = SnakeEnv(seed=seed, length=80, max_length=160, is_grow=True, silent_mode=True)
+        # Specify the directory
+        directory = "./game_states"
+
+        # Get the list of filenames in the specified directory
+        state_name_list = [filename for filename in os.listdir(directory) if os.path.isfile(os.path.join(directory, filename))]
+        state_name_list = [
+            "len180_state_2024_08_18_17_30_47.obj",
+            "len182_state_2024_08_18_17_31_10.obj",
+            "len183_state_2024_08_18_17_31_36.obj",
+            "len189_state_2024_08_18_17_31_52.obj",
+        ]
+        env = SnakeEnv(seed=seed, length=state_name_list, max_length=260, is_grow=True, silent_mode=True)
         env = ActionMasker(env, SnakeEnv.get_action_mask)
         env = Monitor(env)
         env.seed(seed)
@@ -73,14 +84,14 @@ def main():
             # tensorboard_log=LOG_DIR
         )
     else:
-        lr_schedule = linear_schedule(1.44e-4, 1e-6)
+        lr_schedule = linear_schedule(1.44e-5, 1e-6)
         # clip_range_schedule = linear_schedule(0.150, 0.025)
         custom_objects = {
         "learning_rate": lr_schedule,
         "gamma": 0.985,
         "clip_range": 0.008
         }
-        model = MaskablePPO.load("trained_models_cnn/snake21_len80_max160_44000000_steps", env=env,custom_objects=custom_objects)
+        model = MaskablePPO.load("trained_models_cnn/snake21_len180_max280", env=env,custom_objects=custom_objects)
 
     # Set the save directory
     if torch.backends.mps.is_available():

@@ -19,7 +19,7 @@ if torch.backends.mps.is_available():
 else:
     NUM_ENV = 32
 LOG_DIR = "logs"
-ExperimentName = "snake21_len99"
+ExperimentName = "snake21_len180_max280"
 
 os.makedirs(LOG_DIR, exist_ok=True)
 
@@ -49,7 +49,7 @@ def make_env(seed=0):
             "len183_state_2024_08_18_17_31_36.obj",
             "len189_state_2024_08_18_17_31_52.obj",
         ]
-        env = SnakeEnv(seed=seed, length=99, max_length=None, is_grow=False, silent_mode=True)
+        env = SnakeEnv(seed=seed, length=state_name_list, max_length=248, is_grow=True, silent_mode=True)
         env = ActionMasker(env, SnakeEnv.get_action_mask)
         env = Monitor(env)
         env.seed(seed)
@@ -93,16 +93,16 @@ def main():
         policy_kwargs = dict(
             features_extractor_class=CustomFeatureExtractorCNN,
             activation_fn=th.nn.ReLU,
-            net_arch=dict(pi=[512, 256, 128], vf=[256, 32])
+            net_arch=dict(pi=[256, 128, 64], vf=[256, 32])
         )
         # Instantiate a PPO agent using CUDA.
-        old_model_names = ['coaches/snake_ob_len3_max130']
+        old_model_names = ['coaches/snake21_len70_max160_72000000_steps']
         model = TRMaskablePPOMC(
             "CnnPolicy",
             env,
             old_model_names=old_model_names,
             dvn_model_names=[],
-            mc_model_names=['trained_models_cnn/mc_value_evaluation_len3max130_in_len99'],
+            mc_model_names=['trained_models_cnn/mc_value_evaluation_len80_in_len160max260'],
             device="cuda",
             verbose=1,
             n_steps=2048,
