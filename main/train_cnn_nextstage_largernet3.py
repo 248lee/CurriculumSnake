@@ -19,7 +19,7 @@ if torch.backends.mps.is_available():
 else:
     NUM_ENV = 32
 LOG_DIR = "logs"
-ExperimentName = "snake21_len180_max268"
+ExperimentName = "snake21_len120"
 
 os.makedirs(LOG_DIR, exist_ok=True)
 
@@ -49,7 +49,7 @@ def make_env(seed=0):
             "len183_state_2024_08_18_17_31_36.obj",
             "len189_state_2024_08_18_17_31_52.obj",
         ]
-        env = SnakeEnv(seed=seed, length=70, max_length=160, is_grow=True, silent_mode=True)
+        env = SnakeEnv(seed=seed, length=120, max_length=None, is_grow=False, silent_mode=True)
         env = ActionMasker(env, SnakeEnv.get_action_mask)
         env = Monitor(env)
         env.seed(seed)
@@ -102,7 +102,7 @@ def main():
             env,
             old_model_names=old_model_names,
             dvn_model_names=[],
-            mc_model_names=['trained_models_cnn/mc_value_evaluation_len3_in_len70max160'],
+            mc_model_names=['trained_models_cnn/mc_value_evaluation_len3max130_in_len120'],
             device="cuda",
             verbose=1,
             n_steps=2048,

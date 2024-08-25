@@ -15,7 +15,7 @@ class CustomFeatureExtractorCNN(BaseFeaturesExtractor):
         This corresponds to the number of unit for the last layer.
     """
 
-    def __init__(self, observation_space: gym.spaces.Box, features_dim=1024):
+    def __init__(self, observation_space: gym.spaces.Box, features_dim=512):
         # We assume CxHxW images (channels first)
         # Re-ordering will be done by pre-preprocessing or wrapper
         super().__init__(observation_space, features_dim)
