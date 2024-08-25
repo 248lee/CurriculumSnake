@@ -17,7 +17,7 @@ if torch.backends.mps.is_available():
 else:
     NUM_ENV = 64
 LOG_DIR = "logs"
-ExperimentName = "mc_value_evaluation_len80_in_len160max260"
+ExperimentName = "mc_value_evaluation_len180max280_in_len280max380"
 from network_structures import CustomFeatureExtractorCNN
 
 os.makedirs(LOG_DIR, exist_ok=True)
@@ -43,13 +43,15 @@ def make_env(seed=0):
         # Get the list of filenames in the specified directory
         state_name_list = [filename for filename in os.listdir(directory) if os.path.isfile(os.path.join(directory, filename))]
         state_name_list = [
-            "len147_state_2024_08_18_17_28_41.obj",
-            "len180_state_2024_08_18_17_30_47.obj",
-            "len182_state_2024_08_18_17_31_10.obj",
-            "len183_state_2024_08_18_17_31_36.obj",
-            "len189_state_2024_08_18_17_31_52.obj",
+            "len277_state_2024_08_18_17_34_09.obj",
+            "len284_state_2024_08_18_17_34_21.obj",
+            "len285_state_2024_08_25_15_19_10.obj",
+            "len286_state_2024_08_18_17_34_32.obj",
+            "len289_state_2024_08_25_15_20_12.obj",
+            "len291_state_2024_08_25_15_21_01.obj",
+            "len296_state_2024_08_25_15_22_15.obj",
         ]
-        env = SnakeEnv(seed=seed, length=state_name_list, max_length=260, is_grow=True, silent_mode=True)
+        env = SnakeEnv(seed=seed, length=state_name_list, max_length=380, is_grow=True, silent_mode=True)
         env = ActionMasker(env, SnakeEnv.get_action_mask)
         env = Monitor(env)
         env.seed(seed)
@@ -85,7 +87,7 @@ def main():
             tensorboard_log=LOG_DIR,
             policy_kwargs=policy_kwargs
         )
-    model.set_old_policy_model("coaches/snake21_len70_max160_72000000_steps")
+    model.set_old_policy_model("coaches/snake21_len180_max280_154023424_steps")
 
     # Set the save directory
     if torch.backends.mps.is_available():
