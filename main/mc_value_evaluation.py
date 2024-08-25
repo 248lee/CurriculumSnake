@@ -49,7 +49,6 @@ def make_env(seed=0):
             "len286_state_2024_08_18_17_34_32.obj",
             "len289_state_2024_08_25_15_20_12.obj",
             "len291_state_2024_08_25_15_21_01.obj",
-            "len296_state_2024_08_25_15_22_15.obj",
         ]
         env = SnakeEnv(seed=seed, length=state_name_list, max_length=380, is_grow=True, silent_mode=True)
         env = ActionMasker(env, SnakeEnv.get_action_mask)

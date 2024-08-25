@@ -12,7 +12,7 @@ import pickle
 
 
 class SnakeGame:
-    def __init__(self, length, is_grow, seed=0, board_size=12, silent_mode=True, random_states=[]):
+    def __init__(self, length, is_grow, formation='空', seed=0, board_size=12, silent_mode=True, random_states=[]):
         self.board_size = board_size
         self.grid_size = self.board_size ** 2
         self.cell_size = 40
@@ -48,31 +48,50 @@ class SnakeGame:
         self.seed_value = seed
         self.length = length
         self.random_states = random_states
+        self.formation = formation
 
         random.seed(seed) # Set random seed.
         
         self.reset()
 
     def reset(self):
-        if self.length == 'random':
-            length = random.randint(3, 300 + len(self.random_states))
-            if length <= 300:
-                self.snake = self._get_init_snake(length)
-            else:
-                load_state_name = random.choice(self.random_states)
-                self.load_state(load_state_name)
-        elif isinstance(self.length, list):
-            mode = random.uniform(0, 1)
-            if mode < 0.1:
-                self.snake = self._get_init_snake(3)
-            else:
+        if self.formation == '空':
+            if self.length == 'random':
+                length = random.randint(3, 300 + len(self.random_states))
+                if length <= 300:
+                    self.snake = self._get_init_snake(length)
+                else:
+                    load_state_name = random.choice(self.random_states)
+                    self.load_state(load_state_name)
+            elif isinstance(self.length, list):
                 load_state_name = random.choice(self.length)
                 self.load_state(load_state_name)
-        else:
-            self.snake = self._get_init_snake(self.length)
+            else:
+                self.snake = self._get_init_snake(self.length)
+        elif self.formation == '東':
+            self.snake = self._get_init_snake_east(self.length)
+        elif self.formation == '南':
+            self.snake = self._get_init_snake_south(self.length)
+        elif self.formation == '西':
+            self.snake = self._get_init_snake_west(self.length)
+        elif self.formation == '北':
+            self.snake = self._get_init_snake_north(self.length)
+        elif self.formation == '天':
+            self.snake = self._get_init_snake_sky(self.length)
+        elif self.formation == '地':
+            self.snake = self._get_init_snake_ground(self.length)
+        
         # self.snake = [(self.board_size // 2 + i, self.board_size // 2) for i in range(1, -2, -1)] # Initialize the snake with three cells in (row, column) format.
         self.non_snake = set([(row, col) for row in range(self.board_size) for col in range(self.board_size) if (row, col) not in self.snake]) # Initialize the non-snake cells.
-        self.direction = "DOWN" # Snake starts downward in each round
+        self.direction = "WAITING"
+        if self.snake[0][0] - self.snake[1][0] == 1:  # if head is lower than snake's first body
+            self.direction = "DOWN"
+        elif self.snake[0][0] - self.snake[1][0] == -1:  # if head is higher than snake's first body
+            self.direction = "UP"
+        elif self.snake[0][1] - self.snake[1][1] == 1:  # if head is righter than snake's first body
+            self.direction = "RIGHT"
+        elif self.snake[0][1] - self.snake[1][1] == -1:  # if head is lefter than snake's first body
+            self.direction = "LEFT"
         self.food = self._generate_food()
         self.score = 0
         random.seed()
@@ -224,6 +243,131 @@ class SnakeGame:
                 if finish:
                     break
         
+        return result_snake
+    
+    def _get_init_snake_north(self, length):
+        result_snake = []
+        finish = False
+        for i in range(self.board_size):
+            for j in range(self.board_size - 2):
+                if i % 2 == 0:
+                    result_snake.append((i, self.board_size - 3 - j))
+                else:
+                    result_snake.append((i, j))
+                if len(result_snake) >= length:
+                    finish = True
+                    break
+            if finish:
+                break
+        
+        return result_snake
+    
+    def _get_init_snake_east(self, length):
+        result_snake = []
+        finish = False
+        for i in range(self.board_size):
+            for j in range(self.board_size - 2):
+                if i % 2 == 0:
+                    result_snake.append((self.board_size - 3 - j, self.board_size - 1 - i))
+                else:
+                    result_snake.append((j, self.board_size - 1 - i))
+                if len(result_snake) >= length:
+                    finish = True
+                    break
+            if finish:
+                break
+        return result_snake
+    
+    def _get_init_snake_south(self, length):
+        result_snake = []
+        finish = False
+        for i in range(self.board_size):
+            for j in range(2, self.board_size):
+                if i % 2 == 0:
+                    result_snake.append((self.board_size - 1 - i, j))
+                else:
+                    result_snake.append((self.board_size - 1 - i, self.board_size + 1 - j))
+                if len(result_snake) >= length:
+                    finish = True
+                    break
+            if finish:
+                break
+        return result_snake
+    
+    def _get_init_snake_west(self, length):
+        result_snake = []
+        finish = False
+        for i in range(self.board_size):
+            for j in range(2, self.board_size):
+                if i % 2 == 0:
+                    result_snake.append((j, i))
+                else:
+                    result_snake.append((self.board_size + 1 - j, i))
+                if len(result_snake) >= length:
+                    finish = True
+                    break
+            if finish:
+                break
+        return result_snake
+    
+    def _get_init_snake_sky(self, length):
+        reversed_snake = [(0, 0)]
+        sector = 1
+        finish = False
+        for i in range(1, self.board_size):
+            for j in range(1, i + 1):
+                top_element = reversed_snake[len(reversed_snake) - 1]
+                reversed_snake.append((top_element[0] + sector, top_element[1]))
+                if len(reversed_snake) >= length:
+                    finish = True
+                    break
+            if finish:
+                break
+
+            for j in range(1, i + 1):
+                top_element = reversed_snake[len(reversed_snake) - 1]
+                reversed_snake.append((top_element[0], top_element[1] + sector))
+                if len(reversed_snake) >= length:
+                    finish = True
+                    break
+            if finish:
+                break
+            sector *= -1
+        reversed_snake.reverse()
+        result_snake = reversed_snake  # rename the reversed snake
+
+        for i in range(len(result_snake)):
+            result_snake[i] = (result_snake[i][0] + self.board_size // 2, result_snake[i][1] + self.board_size // 2)  # shift the snake to the middle
+        return result_snake
+    
+    def _get_init_snake_ground(self, length):
+        reversed_snake = [(0, 0)]
+        sector = 1
+        finish = False
+        for i in range(1, self.board_size):
+            for j in range(1, i + 1):
+                top_element = reversed_snake[len(reversed_snake) - 1]
+                reversed_snake.append((top_element[0] + sector, top_element[1]))
+                if len(reversed_snake) >= length:
+                    finish = True
+                    break
+            if finish:
+                break
+
+            for j in range(1, i + 1):
+                top_element = reversed_snake[len(reversed_snake) - 1]
+                reversed_snake.append((top_element[0], top_element[1] - sector))
+                if len(reversed_snake) >= length:
+                    finish = True
+                    break
+            if finish:
+                break
+            sector *= -1
+        reversed_snake.reverse()
+        result_snake = reversed_snake  # rename the reversed snake
+
+        for i in range(len(result_snake)):
+            result_snake[i] = (result_snake[i][0] + self.board_size // 2, result_snake[i][1] + self.board_size // 2)  # shift the snake to the middle
         return result_snake
     
     def draw_score(self):
