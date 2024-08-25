@@ -371,6 +371,7 @@ class TRMaskablePPOMC(OnPolicyAlgorithm):
         for mc_model in mc_models:
             mc_model.policy.set_training_mode(False)
         # Update optimizer learning rate
+        self._update_learning_rate(self.policy.optimizer)
         # Compute current clip range
         clip_range = self.clip_range(self._current_progress_remaining)  # type: ignore[operator]
         # Optional: clip range for the value function
@@ -441,7 +442,6 @@ class TRMaskablePPOMC(OnPolicyAlgorithm):
                 transfer_regularization = lambd * F.mse_loss(probs, chosen_last_stage_probs)
                 lambds.append(lambd)
 
-                self._update_learning_rate(self.policy.optimizer)
                 # clipped surrogate loss
                 policy_loss_1 = advantages * ratio
                 policy_loss_2 = advantages * th.clamp(ratio, 1 - clip_range, 1 + clip_range)

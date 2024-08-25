@@ -17,7 +17,7 @@ if torch.backends.mps.is_available():
 else:
     NUM_ENV = 64
 LOG_DIR = "logs"
-ExperimentName = "mc_value_evaluation_len3max130_in_len120"
+ExperimentName = "mc_value_evaluation_len3max130_in_len99"
 from network_structures import CustomFeatureExtractorCNN
 
 os.makedirs(LOG_DIR, exist_ok=True)
@@ -48,7 +48,7 @@ def make_env(seed=0):
             "len183_state_2024_08_18_17_31_36.obj",
             "len189_state_2024_08_18_17_31_52.obj",
         ]
-        env = SnakeEnv(seed=seed, length=120, max_length=None, is_grow=False, silent_mode=True)
+        env = SnakeEnv(seed=seed, length=99, max_length=None, is_grow=False, silent_mode=True)
         env = ActionMasker(env, SnakeEnv.get_action_mask)
         env = Monitor(env)
         env.seed(seed)
