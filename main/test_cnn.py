@@ -14,7 +14,7 @@ import os
 if torch.backends.mps.is_available():
     MODEL_PATH = r"trained_models_cnn_mps/ppo_snake_final"
 else:
-    MODEL_PATH = r"trained_models_cnn/snake21_len180_max280_154023424_steps.zip"
+    MODEL_PATH = r"coaches/snake21_len180_max280_154023424_steps.zip"
 
 NUM_EPISODE = 300
 
@@ -42,7 +42,12 @@ directory = "./game_states"
 state_name_list = [filename for filename in os.listdir(directory) if os.path.isfile(os.path.join(directory, filename))]
 state_name_list = [
             "len277_state_2024_08_18_17_34_09.obj",
-            "len277_state_2024_08_18_17_34_09.obj"
+            "len284_state_2024_08_18_17_34_21.obj",
+            "len285_state_2024_08_25_15_19_10.obj",
+            "len286_state_2024_08_18_17_34_32.obj",
+            "len289_state_2024_08_25_15_20_12.obj",
+            "len291_state_2024_08_25_15_21_01.obj",
+            "len296_state_2024_08_25_15_22_15.obj",
         ]
 
 if RENDER:
@@ -85,10 +90,10 @@ for episode in range(NUM_EPISODE):
     retry_limit = 9
     print(f"=================== Episode {episode + 1} ==================")
     while not (done or truncate):
-        if info != None and info["snake_size"] >= 285:
-            is_save = input()
-            if is_save == 's':
-                env.save_state()
+        # if info != None and info["snake_size"] >= 285:
+        #     is_save = input()
+        #     if is_save == 's':
+        #         env.save_state()
 
         model.policy.set_training_mode(False)
         action, _ = model.predict(obs, action_masks=env.get_action_mask())
