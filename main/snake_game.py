@@ -63,7 +63,7 @@ class SnakeGame:
                 self.load_state(load_state_name)
         elif isinstance(self.length, list):
             mode = random.uniform(0, 1)
-            if mode < -0.01:
+            if mode < 0.25:
                 self.snake = self._get_init_snake(3)
             else:
                 load_state_name = random.choice(self.length)
