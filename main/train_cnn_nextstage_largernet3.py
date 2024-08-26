@@ -99,6 +99,7 @@ def main():
         )
         # Instantiate a PPO agent using CUDA.
         old_model_names = ['coaches/snake21_len180_max280_154023424_steps']
+        from gamma import gamma
         model = TRMaskablePPOMC(
             "CnnPolicy",
             env,
@@ -110,7 +111,7 @@ def main():
             n_steps=2048,
             batch_size=512,
             n_epochs=4,
-            gamma=0.985,
+            gamma=gamma,
             learning_rate=lr_schedule,
             clip_range=9487,
             tensorboard_log=LOG_DIR,

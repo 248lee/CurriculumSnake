@@ -17,7 +17,7 @@ if torch.backends.mps.is_available():
 else:
     NUM_ENV = 32
 LOG_DIR = "logs"
-ExperimentName = "snake21_len180_max280"
+ExperimentName = "snake21_len280_max380"
 
 os.makedirs(LOG_DIR, exist_ok=True)
 
@@ -42,12 +42,14 @@ def make_env(seed=0):
         # Get the list of filenames in the specified directory
         state_name_list = [filename for filename in os.listdir(directory) if os.path.isfile(os.path.join(directory, filename))]
         state_name_list = [
-            "len180_state_2024_08_18_17_30_47.obj",
-            "len182_state_2024_08_18_17_31_10.obj",
-            "len183_state_2024_08_18_17_31_36.obj",
-            "len189_state_2024_08_18_17_31_52.obj",
+            "len277_state_2024_08_18_17_34_09.obj",
+            "len284_state_2024_08_18_17_34_21.obj",
+            "len285_state_2024_08_25_15_19_10.obj",
+            "len286_state_2024_08_18_17_34_32.obj",
+            "len289_state_2024_08_25_15_20_12.obj",
+            "len291_state_2024_08_25_15_21_01.obj",
         ]
-        env = SnakeEnv(seed=seed, length=state_name_list, max_length=260, is_grow=True, silent_mode=True)
+        env = SnakeEnv(seed=seed, length=state_name_list, max_length=380, is_grow=True, silent_mode=True)
         env = ActionMasker(env, SnakeEnv.get_action_mask)
         env = Monitor(env)
         env.seed(seed)
@@ -84,14 +86,14 @@ def main():
             # tensorboard_log=LOG_DIR
         )
     else:
-        lr_schedule = linear_schedule(1.44e-5, 1e-6)
+        lr_schedule = 2.5e-6
         # clip_range_schedule = linear_schedule(0.150, 0.025)
         custom_objects = {
         "learning_rate": lr_schedule,
         "gamma": 0.985,
-        "clip_range": 0.008
+        "clip_range": 0.002
         }
-        model = MaskablePPO.load("trained_models_cnn/snake21_len180_max280", env=env,custom_objects=custom_objects)
+        model = MaskablePPO.load("trained_models_cnn/snake21_len280_max380_130000000_steps", env=env,custom_objects=custom_objects)
 
     # Set the save directory
     if torch.backends.mps.is_available():
@@ -108,7 +110,7 @@ def main():
     log_file_path = os.path.join(save_dir, "training_log.txt")
 
     model.learn(
-        total_timesteps=int(100000000),
+        total_timesteps=int(50000000),
         callback=[checkpoint_callback],
         reset_num_timesteps=False,
         tb_log_name=ExperimentName,

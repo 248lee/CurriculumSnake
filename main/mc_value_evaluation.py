@@ -73,6 +73,7 @@ def main():
             activation_fn=torch.nn.ReLU,
             net_arch=dict(pi=[1], vf=[256, 128])
         )
+    from gamma import gamma
     model = VMaskablePPO(
             "CnnPolicy",
             env,
@@ -81,7 +82,7 @@ def main():
             n_steps=2048,
             batch_size=512,
             n_epochs=4,
-            gamma=0.985,
+            gamma=gamma,
             learning_rate=lr_schedule,
             tensorboard_log=LOG_DIR,
             policy_kwargs=policy_kwargs

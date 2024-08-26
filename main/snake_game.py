@@ -55,7 +55,12 @@ class SnakeGame:
         self.reset()
 
     def reset(self):
-        if self.formation == '空':
+        if self.formation == '隨':
+            names = ['東', '南', '西', '北', '天', '地']
+            formation = random.choice(names)
+        else:
+            formation = self.formation
+        if formation == '空':
             if self.length == 'random':
                 length = random.randint(3, 300 + len(self.random_states))
                 if length <= 300:
@@ -68,17 +73,17 @@ class SnakeGame:
                 self.load_state(load_state_name)
             else:
                 self.snake = self._get_init_snake(self.length)
-        elif self.formation == '東':
+        elif formation == '東':
             self.snake = self._get_init_snake_east(self.length)
-        elif self.formation == '南':
+        elif formation == '南':
             self.snake = self._get_init_snake_south(self.length)
-        elif self.formation == '西':
+        elif formation == '西':
             self.snake = self._get_init_snake_west(self.length)
-        elif self.formation == '北':
+        elif formation == '北':
             self.snake = self._get_init_snake_north(self.length)
-        elif self.formation == '天':
+        elif formation == '天':
             self.snake = self._get_init_snake_sky(self.length)
-        elif self.formation == '地':
+        elif formation == '地':
             self.snake = self._get_init_snake_ground(self.length)
         
         # self.snake = [(self.board_size // 2 + i, self.board_size // 2) for i in range(1, -2, -1)] # Initialize the snake with three cells in (row, column) format.
