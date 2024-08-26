@@ -17,7 +17,7 @@ if torch.backends.mps.is_available():
 else:
     NUM_ENV = 64
 LOG_DIR = "logs"
-ExperimentName = "mc_value_evaluation_len280max380_in_len350max441"
+ExperimentName = "mc_value_evaluation_len10max140_in_len140max240"
 from network_structures import CustomFeatureExtractorCNN
 
 os.makedirs(LOG_DIR, exist_ok=True)
@@ -50,7 +50,7 @@ def make_env(seed=0):
             "len366_state_2024_08_15_08_48_32.obj",
             "len369_state_2024_08_15_08_49_35.obj",
         ]
-        env = SnakeEnv(seed=seed, length=state_name_list, max_length=None, is_grow=True, silent_mode=True)
+        env = SnakeEnv(seed=seed, length=140, max_length=240, formation='隨', is_grow=True, silent_mode=True)
         env = ActionMasker(env, SnakeEnv.get_action_mask)
         env = Monitor(env)
         env.seed(seed)
@@ -87,7 +87,7 @@ def main():
             tensorboard_log=LOG_DIR,
             policy_kwargs=policy_kwargs
         )
-    model.set_old_policy_model("coaches/snake21_len280_max380")
+    model.set_old_policy_model("coaches/snake21_len10_max140")
 
     # Set the save directory
     if torch.backends.mps.is_available():
