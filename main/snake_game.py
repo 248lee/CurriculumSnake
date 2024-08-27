@@ -55,36 +55,50 @@ class SnakeGame:
         self.reset()
 
     def reset(self):
+        length = self.length
         if self.formation == '隨':
             names = ['東', '南', '西', '北', '天', '地']
             formation = random.choice(names)
+        elif self.formation == '終焉':  # in this formation, length must be a states list
+            p = random.uniform(0, 1)
+            if p < 0.2:  # 20% to play 6dau '隨' with length between 30 to 150
+                length = random.randint(50, 150)
+                names = ['東', '南', '西', '北', '天', '地']
+                formation = random.choice(names)
+            elif 0.2 <= p and p < 0.4:  # 20% to play len=3
+                self.snake = self._get_init_snake(3)
+                formation = self.formation
+            else:  # 60% to load a state
+                formation = '空'
         else:
             formation = self.formation
-        if formation == '空':
-            if self.length == 'random':
+            
+        if formation == '空' or not isinstance(length, int):
+            if length == 'random':
                 length = random.randint(3, 300 + len(self.random_states))
                 if length <= 300:
                     self.snake = self._get_init_snake(length)
                 else:
                     load_state_name = random.choice(self.random_states)
                     self.load_state(load_state_name)
-            elif isinstance(self.length, list):
+            elif isinstance(length, list):
                 load_state_name = random.choice(self.length)
                 self.load_state(load_state_name)
             else:
-                self.snake = self._get_init_snake(self.length)
-        elif formation == '東':
-            self.snake = self._get_init_snake_east(self.length)
-        elif formation == '南':
-            self.snake = self._get_init_snake_south(self.length)
-        elif formation == '西':
-            self.snake = self._get_init_snake_west(self.length)
-        elif formation == '北':
-            self.snake = self._get_init_snake_north(self.length)
-        elif formation == '天':
-            self.snake = self._get_init_snake_sky(self.length)
-        elif formation == '地':
-            self.snake = self._get_init_snake_ground(self.length)
+                self.snake = self._get_init_snake(length)
+        if isinstance(length, int):
+            if formation == '東':
+                self.snake = self._get_init_snake_east(length)
+            if formation == '南':
+                self.snake = self._get_init_snake_south(length)
+            if formation == '西':
+                self.snake = self._get_init_snake_west(length)
+            if formation == '北':
+                self.snake = self._get_init_snake_north(length)
+            if formation == '天':
+                self.snake = self._get_init_snake_sky(length)
+            if formation == '地':
+                self.snake = self._get_init_snake_ground(length)
         
         # self.snake = [(self.board_size // 2 + i, self.board_size // 2) for i in range(1, -2, -1)] # Initialize the snake with three cells in (row, column) format.
         self.non_snake = set([(row, col) for row in range(self.board_size) for col in range(self.board_size) if (row, col) not in self.snake]) # Initialize the non-snake cells.

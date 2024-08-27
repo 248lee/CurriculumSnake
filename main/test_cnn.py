@@ -14,11 +14,11 @@ import os
 if torch.backends.mps.is_available():
     MODEL_PATH = r"trained_models_cnn_mps/ppo_snake_final"
 else:
-    MODEL_PATH = r"trained_models_cnn/snake21_len70_max160.zip"
+    MODEL_PATH = r"coaches/snake_ob_len3_max130.zip"
 
 NUM_EPISODE = 300
 
-RENDER = True
+RENDER = False
 FRAME_DELAY = 0.01 # 0.01 fast, 0.05 slow
 ROUND_DELAY = 5
 VALUE_MODEL_NAMES = [
@@ -40,20 +40,20 @@ directory = "./game_states"
 
 # Get the list of filenames in the specified directory
 state_name_list = [filename for filename in os.listdir(directory) if os.path.isfile(os.path.join(directory, filename))]
-state_name_list = [
-            # "len334_state_2024_08_18_17_35_40.obj",
-            # "len353_state_2024_08_15_08_46_43.obj",
-            # "len356_state_2024_08_15_08_59_36.obj",
-            # "len359_state_2024_08_15_09_00_32.obj",
-            # "len366_state_2024_08_15_08_48_32.obj",
-            # "len369_state_2024_08_15_08_49_35.obj",
-            "len286_state_2024_08_18_17_34_32.obj"
-        ]
+# state_name_list = [
+#             # "len334_state_2024_08_18_17_35_40.obj",
+#             # "len353_state_2024_08_15_08_46_43.obj",
+#             # "len356_state_2024_08_15_08_59_36.obj",
+#             # "len359_state_2024_08_15_09_00_32.obj",
+#             # "len366_state_2024_08_15_08_48_32.obj",
+#             # "len369_state_2024_08_15_08_49_35.obj",
+#             "len286_state_2024_08_18_17_34_32.obj"
+#         ]
 
 if RENDER:
-    env = SnakeEnv(seed=seed, length = 3, formation='隨', is_grow=True, limit_step=True, silent_mode=False)
+    env = SnakeEnv(seed=seed, length=state_name_list, formation='終焉', max_length=None, is_grow=True, silent_mode=False)
 else:
-    env = SnakeEnv(seed=seed, length = 3, formation='隨', is_grow=True, limit_step=True, silent_mode=True)
+    env = SnakeEnv(seed=seed, length = 140, formation='隨', is_grow=True, limit_step=True, silent_mode=True)
 
 # Load the trained model
 model = MaskablePPO.load(MODEL_PATH)

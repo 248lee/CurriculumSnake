@@ -103,7 +103,7 @@ class SnakeEnv(gym.Env):
             if np.linalg.norm(info["snake_head_pos"] - info["food_pos"]) < np.linalg.norm(info["prev_snake_head_pos"] - info["food_pos"]):
                 reward = 2 / info["snake_size"]
             else:
-                reward = -2 / info["snake_size"]
+                reward = -2.4 / info["snake_size"]
             if info['snake_size'] >= 100:
                 reward = -self.reward_step_counter * 0.00005  # if the snake is long enough, it shouldn't get step reward
             else:
