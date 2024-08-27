@@ -7,7 +7,7 @@ from stable_baselines3.common.monitor import Monitor
 from stable_baselines3.common.vec_env import SubprocVecEnv
 from stable_baselines3.common.callbacks import CheckpointCallback
 
-from vppo import VMaskablePPO
+from vppo_for_mc import VMaskablePPOMultiCoach
 from sb3_contrib.common.wrappers import ActionMasker
 
 from snake_game_custom_wrapper_cnn import SnakeEnv
@@ -15,9 +15,9 @@ from snake_game_custom_wrapper_cnn import SnakeEnv
 if torch.backends.mps.is_available():
     NUM_ENV = 32 * 2
 else:
-    NUM_ENV = 50
+    NUM_ENV = 64
 LOG_DIR = "logs"
-ExperimentName = "mc_value_evaluation_loads_in_BOSS"
+ExperimentName = "mc_value_evaluation_len10max140_in_len140max240"
 from network_structures import CustomFeatureExtractorCNN
 
 os.makedirs(LOG_DIR, exist_ok=True)
@@ -42,7 +42,15 @@ def make_env(seed=0):
 
         # Get the list of filenames in the specified directory
         state_name_list = [filename for filename in os.listdir(directory) if os.path.isfile(os.path.join(directory, filename))]
-        env = SnakeEnv(seed=seed, length=state_name_list, max_length=None, is_grow=True, silent_mode=True)
+        state_name_list = [
+            "len350_state_2024_08_15_07_51_07.obj",
+            "len353_state_2024_08_15_08_46_43.obj",
+            "len356_state_2024_08_15_08_59_36.obj",
+            "len359_state_2024_08_15_09_00_32.obj",
+            "len366_state_2024_08_15_08_48_32.obj",
+            "len369_state_2024_08_15_08_49_35.obj",
+        ]
+        env = SnakeEnv(seed=seed, length=140, max_length=240, formation='隨', is_grow=True, silent_mode=True)
         env = ActionMasker(env, SnakeEnv.get_action_mask)
         env = Monitor(env)
         env.seed(seed)
@@ -63,9 +71,10 @@ def main():
     policy_kwargs = dict(
             features_extractor_class=CustomFeatureExtractorCNN,
             activation_fn=torch.nn.ReLU,
-            net_arch=dict(pi=[1], vf=[128, 32])
+            net_arch=dict(pi=[1], vf=[256, 128])
         )
-    model = VMaskablePPO(
+    from gamma import gamma
+    model = VMaskablePPOMultiCoach(
             "CnnPolicy",
             env,
             device="cuda",
@@ -73,12 +82,20 @@ def main():
             n_steps=2048,
             batch_size=512,
             n_epochs=4,
-            gamma=0.985,
+            gamma=gamma,
             learning_rate=lr_schedule,
             tensorboard_log=LOG_DIR,
             policy_kwargs=policy_kwargs
         )
-    model.set_old_policy_model("trained_models_cnn/snake21_len350loads_please_success_124000000_steps")
+    policy_model_paths = [
+        'coaches/snake_ob_len3_max130',
+        'coaches/snake21_len350max441'
+    ]
+    mc_value_model_paths = [
+        'trained_models_cnn/mc_value_evaluation_len3max130_in_len70max160',
+        'trained_models_cnn/snake21_len70_max160_130000000_steps'
+    ]
+    model.set_mc_policy(policy_model_paths, mc_value_model_paths)
 
     # Set the save directory
     if torch.backends.mps.is_available():
@@ -96,7 +113,7 @@ def main():
 
     model.learn(
         total_timesteps=int(10000000),
-        callback=[checkpoint_callback],
+        #callback=[checkpoint_callback],
         tb_log_name=ExperimentName,
         progress_bar=True
     )
