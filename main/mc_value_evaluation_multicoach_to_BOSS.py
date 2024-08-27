@@ -87,14 +87,13 @@ def main():
             tensorboard_log=LOG_DIR,
             policy_kwargs=policy_kwargs
         )
-    policy_model_paths = [
-        'coaches/snake_ob_len3_max130',
-        'coaches/snake21_len350max441'
-    ]
-    mc_value_model_paths = [
-        'trained_models_cnn/mc_value_evaluation_len3max130_in_len70max160',
-        'trained_models_cnn/snake21_len70_max160_130000000_steps'
-    ]
+    
+    directory = "./coaches"
+    coaches_names = [filename[:len(filename) - 4] for filename in os.listdir(directory) if os.path.isfile(os.path.join(directory, filename))]
+    policy_model_paths = ["coaches/" + cn for cn in coaches_names]
+    mc_value_model_paths = ["trained_models_cnn/mc_value_evaluation_" + cn  + "_in_BOSS" for cn in coaches_names]
+    print(policy_model_paths)
+    print(mc_value_model_paths)
     model.set_mc_policy(policy_model_paths, mc_value_model_paths)
 
     # Set the save directory
