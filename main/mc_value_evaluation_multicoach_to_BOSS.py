@@ -17,8 +17,8 @@ if torch.backends.mps.is_available():
 else:
     NUM_ENV = 64
 LOG_DIR = "logs"
-ExperimentName = "mc_value_evaluation_len10max140_in_len140max240"
-from network_structures import CustomFeatureExtractorCNN
+ExperimentName = "mc_value_evaluation_mc_policy_in_BOSS"
+from network_structures import Stage2CustomFeatureExtractorCNN
 
 os.makedirs(LOG_DIR, exist_ok=True)
 
@@ -42,15 +42,7 @@ def make_env(seed=0):
 
         # Get the list of filenames in the specified directory
         state_name_list = [filename for filename in os.listdir(directory) if os.path.isfile(os.path.join(directory, filename))]
-        state_name_list = [
-            "len350_state_2024_08_15_07_51_07.obj",
-            "len353_state_2024_08_15_08_46_43.obj",
-            "len356_state_2024_08_15_08_59_36.obj",
-            "len359_state_2024_08_15_09_00_32.obj",
-            "len366_state_2024_08_15_08_48_32.obj",
-            "len369_state_2024_08_15_08_49_35.obj",
-        ]
-        env = SnakeEnv(seed=seed, length=140, max_length=240, formation='隨', is_grow=True, silent_mode=True)
+        env = SnakeEnv(seed=seed, length=state_name_list, formation='終焉', max_length=None, is_grow=True, silent_mode=True)
         env = ActionMasker(env, SnakeEnv.get_action_mask)
         env = Monitor(env)
         env.seed(seed)
@@ -69,10 +61,10 @@ def main():
     lr_schedule = linear_schedule(2.5e-4, 2.5e-6)
     # clip_range_schedule = linear_schedule(0.150, 0.025)
     policy_kwargs = dict(
-            features_extractor_class=CustomFeatureExtractorCNN,
-            activation_fn=torch.nn.ReLU,
-            net_arch=dict(pi=[1], vf=[256, 128])
-        )
+                features_extractor_class=Stage2CustomFeatureExtractorCNN,
+                activation_fn=torch.nn.ReLU,
+                net_arch=dict(pi=[1], vf=[256, 128])
+            )
     from gamma import gamma
     model = VMaskablePPOMultiCoach(
             "CnnPolicy",
@@ -111,7 +103,7 @@ def main():
     log_file_path = os.path.join(save_dir, "training_log.txt")
 
     model.learn(
-        total_timesteps=int(10000000),
+        total_timesteps=int(50000000),
         #callback=[checkpoint_callback],
         tb_log_name=ExperimentName,
         progress_bar=True
