@@ -8,6 +8,7 @@ import torch.nn.functional as F
 
 class MultiPolicy():
     def __init__(self, env: GymEnv, policy_model_paths: List[str], mc_value_model_paths: List[str]):
+        self.deleteme = mc_value_model_paths
         self.env = env
         self.policy_models = []
         self.mc_value_models = []
@@ -28,11 +29,22 @@ class MultiPolicy():
                 valueses.append(values)
             valueses = th.concat(valueses, dim=-1)  # shape: (batchsize, num_of_mc_value_models)
             logits = valueses  # rename valueses to logits
-            probabilities = F.softmax(logits, dim=1)  # Convert logits to probabilities using softmax
+            probabilities = F.softmax(logits * 66, dim=1)  # Convert logits to probabilities using softmax
+
+            # for idx, dm in enumerate(self.deleteme):
+            #     print(dm[20:], logits[0, idx].item(), probabilities[0, idx].item())
+            # input("================================")
 
             chosen_models = th.multinomial(probabilities, num_samples=1)
-            chosen_models = chosen_models.squeeze()
+            chosen_models = chosen_models.squeeze(dim=-1)  # tired pytorch: if I don't specify the dim=-1, when batchsize=1, it will get rid of my batch!!!!!
+            """
+Warning
 
+If the tensor has a batch dimension of size 1, then squeeze(input) will also remove the batch dimension, which can lead to unexpected errors. Consider specifying only the dims you wish to be squeezed.
+
+from https://pytorch.org/docs/stable/generated/torch.squeeze.html
+
+            """
         return chosen_models
     
     def get_distributions(self, observations: th.Tensor, action_masks: Optional[np.ndarray]):
@@ -65,6 +77,14 @@ class MultiPolicy():
     
     def predict(self, observations: th.Tensor, action_masks: Optional[np.ndarray], deterministic: bool =False):
         with th.no_grad():
+            distributions = self.get_distributions(observations, action_masks)
+            actions = distributions.get_actions(deterministic=deterministic)
+            actions = actions.cpu().numpy()
+            return actions
+        
+    def predict_for_ndarray(self, observations: np.ndarray, action_masks: Optional[np.ndarray], deterministic: bool =False):
+        with th.no_grad():
+            observations, _ = self.policy_models[0].policy.obs_to_tensor(observations)
             distributions = self.get_distributions(observations, action_masks)
             actions = distributions.get_actions(deterministic=deterministic)
             actions = actions.cpu().numpy()

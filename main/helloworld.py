@@ -16,9 +16,12 @@ import numpy as np
 table = np.zeros((2, 3))
 for i in range(1000):
     samples = torch.multinomial(probabilities, num_samples=1)
+    
 
     # If you want a 1-dimensional tensor of samples instead of 2D with size (batch_size, 1)
-    samples = samples.squeeze()
+    samples = samples.squeeze(dim=-1)  # tired pytorch: if I don't specify the dim=-1, when batchsize=1, it will get rid of my batch!!!!!
+    print(samples.shape)
+    input()
     table[0, samples[0].item()] += 1
     table[1, samples[1].item()] += 1
 

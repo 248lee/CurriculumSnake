@@ -4,12 +4,15 @@ import random
 import torch
 from sb3_contrib import MaskablePPO
 
+from mc_policy import MultiPolicy
 from snake_game_custom_wrapper_cnn import SnakeEnv
 from network_structures import DVNNetwork
 import numpy as np
 import matplotlib.pyplot as plt
 import torch as th
 import os
+
+IS_MC = True
 
 if torch.backends.mps.is_available():
     MODEL_PATH = r"trained_models_cnn_mps/ppo_snake_final"
@@ -29,13 +32,13 @@ VALUE_MODEL_NAMES = [
     # {"actor": "random_feature_extractor.zip", "critic": "trained_models_value/DVN_len80toBOSS_please_success_final.zip"},
 ]
 AC_MODEL_NAMES = [
-    "trained_models_cnn/mc_value_evaluation_snake_ob_len3_max130_in_BOSS",
-    "trained_models_cnn/mc_value_evaluation_snake21_len10_max140_in_BOSS",
-    "trained_models_cnn/mc_value_evaluation_snake21_len70_max160_in_BOSS",
-    "trained_models_cnn/mc_value_evaluation_snake21_len140max240_in_BOSS",
-    "trained_models_cnn/mc_value_evaluation_snake21_len180_max280_in_BOSS",
-    "trained_models_cnn/mc_value_evaluation_snake21_len280_max380_in_BOSS",
-    "trained_models_cnn/mc_value_evaluation_snake21_len350max441_in_BOSS",
+    # "trained_models_cnn/mc_value_evaluation_snake_ob_len3_max130_in_BOSS",
+    # "trained_models_cnn/mc_value_evaluation_snake21_len10_max140_in_BOSS",
+    # "trained_models_cnn/mc_value_evaluation_snake21_len70_max160_in_BOSS",
+    # "trained_models_cnn/mc_value_evaluation_snake21_len140max240_in_BOSS",
+    # "trained_models_cnn/mc_value_evaluation_snake21_len180_max280_in_BOSS",
+    # "trained_models_cnn/mc_value_evaluation_snake21_len280_max380_in_BOSS",
+    # "trained_models_cnn/mc_value_evaluation_snake21_len350max441_in_BOSS",
 ]
 
 seed = random.randint(0, 1e9)
@@ -62,7 +65,14 @@ else:
     env = SnakeEnv(seed=seed, length = 140, formation='隨', is_grow=True, limit_step=True, silent_mode=True)
 
 # Load the trained model
-model = MaskablePPO.load(MODEL_PATH)
+if IS_MC:
+    directory = "./coaches"
+    coaches_names = [filename[:len(filename) - 4] for filename in os.listdir(directory) if os.path.isfile(os.path.join(directory, filename))]
+    policy_model_paths = ["coaches/" + cn for cn in coaches_names]
+    mc_value_model_paths = ["trained_models_cnn/mc_value_evaluation_" + cn  + "_in_BOSS" for cn in coaches_names]
+    model = MultiPolicy(env, policy_model_paths, mc_value_model_paths)
+else:
+    model = MaskablePPO.load(MODEL_PATH)
 if VALUE_MODEL_NAMES != []:
     value_models = []
     for vmn in VALUE_MODEL_NAMES:
@@ -100,9 +110,12 @@ for episode in range(NUM_EPISODE):
         #     is_save = input()
         #     if is_save == 's':
         #         env.save_state()
-
-        model.policy.set_training_mode(False)
-        action, _ = model.predict(obs, action_masks=env.get_action_mask())
+        if not IS_MC:
+            model.policy.set_training_mode(False)
+            action, _ = model.predict(obs, action_masks=env.get_action_mask())
+        else:
+            action = model.predict_for_ndarray(obs, action_masks=env.get_action_mask())
+            action = action[0]
         if VALUE_MODEL_NAMES != [] or AC_MODEL_NAMES != []:
             obs, _ = model.policy.obs_to_tensor(obs)
         if VALUE_MODEL_NAMES != []:
