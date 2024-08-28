@@ -182,9 +182,10 @@ class VMaskablePPO(OnPolicyAlgorithm):
 
     def set_old_policy_model(self, model_path):
         global policy_model
-        if policy_model == None:
-            policy_model = MaskablePPO.load(model_path)
-            policy_model.policy.set_training_mode(False)
+        if policy_model != None:
+            policy_model = None
+        policy_model = MaskablePPO.load(model_path)
+        policy_model.policy.set_training_mode(False)
 
     def collect_rollouts(
         self,

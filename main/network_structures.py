@@ -56,9 +56,9 @@ class Stage2CustomFeatureExtractorCNN(BaseFeaturesExtractor):
         self.NatureCNN = nn.Sequential(
             nn.Conv2d(n_input_channels, 96, kernel_size=3, stride=1),
             nn.ReLU(),
-            nn.Conv2d(96, 128, kernel_size=2, stride=1),
+            nn.Conv2d(96, 128, kernel_size=3, stride=2),
             nn.ReLU(),
-            nn.Conv2d(128, 152, kernel_size=2, stride=1),
+            nn.Conv2d(128, 152, kernel_size=3, stride=2),
             nn.ReLU(),
             nn.Flatten(),
         )

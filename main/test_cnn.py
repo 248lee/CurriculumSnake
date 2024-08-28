@@ -18,7 +18,7 @@ else:
 
 NUM_EPISODE = 300
 
-RENDER = False
+RENDER = True
 FRAME_DELAY = 0.01 # 0.01 fast, 0.05 slow
 ROUND_DELAY = 5
 VALUE_MODEL_NAMES = [
@@ -29,7 +29,13 @@ VALUE_MODEL_NAMES = [
     # {"actor": "random_feature_extractor.zip", "critic": "trained_models_value/DVN_len80toBOSS_please_success_final.zip"},
 ]
 AC_MODEL_NAMES = [
-    # "trained_models_cnn/mc_value_evaluation_len3_in_len70max160_9000000_steps"
+    "trained_models_cnn/mc_value_evaluation_snake_ob_len3_max130_in_BOSS",
+    "trained_models_cnn/mc_value_evaluation_snake21_len10_max140_in_BOSS",
+    "trained_models_cnn/mc_value_evaluation_snake21_len70_max160_in_BOSS",
+    "trained_models_cnn/mc_value_evaluation_snake21_len140max240_in_BOSS",
+    "trained_models_cnn/mc_value_evaluation_snake21_len180_max280_in_BOSS",
+    "trained_models_cnn/mc_value_evaluation_snake21_len280_max380_in_BOSS",
+    "trained_models_cnn/mc_value_evaluation_snake21_len350max441_in_BOSS",
 ]
 
 seed = random.randint(0, 1e9)

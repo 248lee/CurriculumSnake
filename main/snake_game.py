@@ -73,7 +73,7 @@ class SnakeGame:
         else:
             formation = self.formation
             
-        if formation == '空' or not isinstance(length, int):
+        if formation == '空':
             if length == 'random':
                 length = random.randint(3, 300 + len(self.random_states))
                 if length <= 300:

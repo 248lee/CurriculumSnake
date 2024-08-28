@@ -112,6 +112,8 @@ def main():
 
         # Save the final model
         model.save(os.path.join(save_dir, ExperimentName + ".zip"))
+        # GARBAGE PYTHON SHIT
+        del(model)
 
 if __name__ == "__main__":
     main()
