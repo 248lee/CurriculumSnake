@@ -29,7 +29,7 @@ class MultiPolicy():
                 valueses.append(values)
             valueses = th.concat(valueses, dim=-1)  # shape: (batchsize, num_of_mc_value_models)
             logits = valueses  # rename valueses to logits
-            probabilities = F.softmax(logits * 66, dim=1)  # Convert logits to probabilities using softmax
+            probabilities = F.softmax(logits * 200, dim=1)  # Convert logits to probabilities using softmax
 
             # for idx, dm in enumerate(self.deleteme):
             #     print(dm[20:], logits[0, idx].item(), probabilities[0, idx].item())

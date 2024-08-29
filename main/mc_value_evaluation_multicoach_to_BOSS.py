@@ -83,7 +83,7 @@ def main():
     directory = "./coaches"
     coaches_names = [filename[:len(filename) - 4] for filename in os.listdir(directory) if os.path.isfile(os.path.join(directory, filename))]
     policy_model_paths = ["coaches/" + cn for cn in coaches_names]
-    mc_value_model_paths = ["trained_models_cnn/mc_value_evaluation_" + cn  + "_in_BOSS" for cn in coaches_names]
+    mc_value_model_paths = ["trained_models_cnn/point985/mc_value_evaluation_" + cn  + "_in_BOSS" for cn in coaches_names]
     print(policy_model_paths)
     print(mc_value_model_paths)
     model.set_mc_policy(policy_model_paths, mc_value_model_paths)

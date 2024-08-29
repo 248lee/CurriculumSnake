@@ -69,7 +69,7 @@ if IS_MC:
     directory = "./coaches"
     coaches_names = [filename[:len(filename) - 4] for filename in os.listdir(directory) if os.path.isfile(os.path.join(directory, filename))]
     policy_model_paths = ["coaches/" + cn for cn in coaches_names]
-    mc_value_model_paths = ["trained_models_cnn/mc_value_evaluation_" + cn  + "_in_BOSS" for cn in coaches_names]
+    mc_value_model_paths = ["trained_models_cnn/coaches985/mc_value_evaluation_" + cn  + "_in_BOSS" for cn in coaches_names]
     model = MultiPolicy(env, policy_model_paths, mc_value_model_paths)
 else:
     model = MaskablePPO.load(MODEL_PATH)
