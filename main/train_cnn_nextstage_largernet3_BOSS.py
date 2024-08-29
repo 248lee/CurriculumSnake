@@ -41,7 +41,7 @@ def make_env(seed=0):
 
         # Get the list of filenames in the specified directory
         state_name_list = [filename for filename in os.listdir(directory) if os.path.isfile(os.path.join(directory, filename))]
-        env = SnakeEnv(seed=seed, length=state_name_list, max_length=None, is_grow=True, silent_mode=True)
+        env = SnakeEnv(seed=seed, length=state_name_list, formation='終焉', max_length=None, is_grow=True, silent_mode=True)
         env = ActionMasker(env, SnakeEnv.get_action_mask)
         env = Monitor(env)
         env.seed(seed)
@@ -95,6 +95,7 @@ def main():
         value_of_mc_policy_path = "trained_models_cnn/mc_value_evaluation_mc_policy_in_BOSS"
         print(policy_model_paths)
         print(mc_value_model_paths)
+        from gamma import gamma
         model = TRMaskablePPOMultiPolicy(
             "CnnPolicy",
             env,
@@ -106,7 +107,7 @@ def main():
             n_steps=2048,
             batch_size=512,
             n_epochs=4,
-            gamma=0.985,
+            gamma=gamma,
             learning_rate=lr_schedule,
             clip_range=9487,
             tensorboard_log=LOG_DIR,
