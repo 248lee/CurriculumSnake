@@ -12,7 +12,7 @@ import pickle
 
 
 class SnakeGame:
-    def __init__(self, length, is_grow, formation='空', seed=0, board_size=12, silent_mode=True, random_states=[]):
+    def __init__(self, length, is_grow, formation='空', seed=0, board_size=21, silent_mode=True, random_states=[]):
         self.board_size = board_size
         self.grid_size = self.board_size ** 2
         self.cell_size = 40
@@ -502,7 +502,7 @@ class SnakeGame:
 if __name__ == "__main__":
 
     seed = random.randint(0, 1e9)
-    game = SnakeGame(seed=seed, silent_mode=False)
+    game = SnakeGame(seed=seed, length=3, is_grow=True, silent_mode=False)
     pygame.init()
     game.screen = pygame.display.set_mode((game.display_width, game.display_height))
     pygame.display.set_caption("Snake Game")

@@ -1,3 +1,4 @@
+import pickle
 import time
 import random
 
@@ -13,11 +14,12 @@ import torch as th
 import os
 
 IS_MC = False
+IS_RECORDING = False
 
 if torch.backends.mps.is_available():
     MODEL_PATH = r"trained_models_cnn_mps/ppo_snake_final"
 else:
-    MODEL_PATH = r"trained_models_cnn/snake_ob_BOSS_please_success_146000000_steps.zip"
+    MODEL_PATH = r"trained_models_cnn/snake_ob_BOSS_please_success_130000000_steps.zip"
 
 NUM_EPISODE = 300
 
@@ -104,6 +106,11 @@ for episode in range(NUM_EPISODE):
     sum_step_reward = 0
 
     retry_limit = 9
+
+    if IS_RECORDING:
+        snake_record = []
+        food_record = []
+    
     print(f"=================== Episode {episode + 1} ==================")
     while not (done or truncate):
         # if info != None and info["snake_size"] >= 285:
@@ -167,6 +174,10 @@ for episode in range(NUM_EPISODE):
         num_step += 1
         obs, reward, done, truncate, info = env.step(action)
 
+        if IS_RECORDING:
+            snake_record.append(env.game.snake.copy())
+            food_record.append(env.game.food)
+
         if done:
             if info["snake_size"] == env.game.grid_size:
                 print(f"You are BREATHTAKING! Victory reward: {reward:.4f}.")
@@ -194,6 +205,15 @@ for episode in range(NUM_EPISODE):
     terminal_length_distrib[snake_size] += 1
     total_reward += episode_reward
     total_score += env.game.score
+    if IS_RECORDING and snake_size == env.game.grid_size:
+        record = {
+            "snake_record": (snake_record),
+            "food_record": (food_record)
+        }
+        os.makedirs("recordings", exist_ok=True)
+        with open("recordings/len" + str(env.game.grid_size) + "_" + time.strftime('%Y_%m_%d_%H_%M_%S',time.localtime(time.time())) + '.obj', 'wb') as file:
+            pickle.dump(record, file)
+        break
     if RENDER:
         time.sleep(ROUND_DELAY)
 
