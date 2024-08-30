@@ -385,7 +385,7 @@ class TRMaskablePPOMultiPolicy(OnPolicyAlgorithm):
                     lambd = th.mean(delta_value).item() + 3e-3
                     lambd = np.clip(lambd, a_min=-0.5, a_max=0) * -10
                     lambd = lambd.item()
-                    clip_range = 0.002 + 0.003 * self._current_progress_remaining + 0.12 * lambd
+                    clip_range = 0.01 + 0.02 * self._current_progress_remaining + 0.12 * lambd
                 transfer_regularization = lambd * F.mse_loss(prob, last_stage_prob)
                 lambds.append(lambd.item())
 

@@ -12,16 +12,16 @@ import matplotlib.pyplot as plt
 import torch as th
 import os
 
-IS_MC = True
+IS_MC = False
 
 if torch.backends.mps.is_available():
     MODEL_PATH = r"trained_models_cnn_mps/ppo_snake_final"
 else:
-    MODEL_PATH = r"coaches/snake_ob_len3_max130.zip"
+    MODEL_PATH = r"trained_models_cnn/snake_ob_BOSS_please_success_146000000_steps.zip"
 
 NUM_EPISODE = 300
 
-RENDER = True
+RENDER = False
 FRAME_DELAY = 0.01 # 0.01 fast, 0.05 slow
 ROUND_DELAY = 5
 VALUE_MODEL_NAMES = [
@@ -60,9 +60,9 @@ state_name_list = [filename for filename in os.listdir(directory) if os.path.isf
 #         ]
 
 if RENDER:
-    env = SnakeEnv(seed=seed, length=state_name_list, formation='終焉', max_length=None, is_grow=True, silent_mode=False)
+    env = SnakeEnv(seed=seed, length=3, max_length=None, is_grow=True, silent_mode=False)
 else:
-    env = SnakeEnv(seed=seed, length = 140, formation='隨', is_grow=True, limit_step=True, silent_mode=True)
+    env = SnakeEnv(seed=seed, length=3, max_length=None, is_grow=True, silent_mode=True)
 
 # Load the trained model
 if IS_MC:

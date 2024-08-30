@@ -1,5 +1,6 @@
 import torch
 import torch.nn.functional as F
+from stable_baselines3 import A2C
 
 # Example tensor with shape (batch_size, num_of_logits)
 logits = torch.tensor([[2.0, 1.0, 0.1], [0.5, 2.2, 3.3]])
