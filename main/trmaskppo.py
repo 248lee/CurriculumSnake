@@ -8,12 +8,12 @@ from stable_baselines3.common.callbacks import BaseCallback
 from stable_baselines3.common.on_policy_algorithm import OnPolicyAlgorithm
 from stable_baselines3.common.policies import BasePolicy
 from stable_baselines3.common.type_aliases import GymEnv, MaybeCallback, Schedule
-from stable_baselines3.common.utils import explained_variance, get_schedule_fn, obs_as_tensor
+from stable_baselines3.common.utils import explained_variance, get_schedule_fn, obs_as_tensor, update_learning_rate
 from stable_baselines3.common.vec_env import VecEnv
 from torch.nn import functional as F
 from sb3_contrib import MaskablePPO
 from dvn import DVNNetwork
-import os
+from typing import List
 
 from sb3_contrib.common.maskable.buffers import MaskableDictRolloutBuffer, MaskableRolloutBuffer
 from sb3_contrib.common.maskable.policies import MaskableActorCriticPolicy
@@ -22,7 +22,8 @@ from sb3_contrib.ppo_mask.policies import CnnPolicy, MlpPolicy, MultiInputPolicy
 
 SelfMaskablePPO = TypeVar("SelfMaskablePPO", bound="MaskablePPO")
 old_model = None
-dvn_model = None
+dvn_value_model = None
+vppo_value_model = None
 
 
 class TRMaskablePPO(OnPolicyAlgorithm):
@@ -82,8 +83,9 @@ class TRMaskablePPO(OnPolicyAlgorithm):
         self,
         policy: Union[str, Type[MaskableActorCriticPolicy]],
         env: Union[GymEnv, str],
-        old_model_name: str = None,
-        dvn_model_name: str = None,
+        old_model_path: str = None,
+        dvn_value_model_path: str = None,
+        vppo_value_model_path: str = None,
         learning_rate: Union[float, Schedule] = 3e-4,
         n_steps: int = 2048,
         batch_size: Optional[int] = 64,
@@ -141,8 +143,9 @@ class TRMaskablePPO(OnPolicyAlgorithm):
         self.clip_range_vf = clip_range_vf
         self.normalize_advantage = normalize_advantage
         self.target_kl = target_kl
-        self.old_model_name = old_model_name
-        self.dvn_model_name = dvn_model_name
+        self.old_model_path = old_model_path
+        self.dvn_value_model_path = dvn_value_model_path
+        self.vppo_value_model_path = vppo_value_model_path
 
         if _init_setup_model:
             self._setup_model()
@@ -315,25 +318,49 @@ class TRMaskablePPO(OnPolicyAlgorithm):
         """
         return self.policy.predict(observation, state, episode_start, deterministic, action_masks=action_masks)
 
+    # def _update_learning_rate(self, lambd, optimizers: Union[List[th.optim.Optimizer], th.optim.Optimizer]) -> None:
+    #     """
+    #     Update the optimizers learning rate using the current learning rate schedule
+    #     and the current progress remaining (from 1 to 0).
+
+    #     :param optimizers:
+    #         An optimizer or a list of optimizers.
+    #     """
+    #     # Log the current learning rate
+    #     self.logger.record("train/learning_rate", self.lr_schedule(self._current_progress_remaining))
+    #     lr = self.lr_schedule(self._current_progress_remaining)
+    #     if lambd <= 0.00001:
+    #         lr *= 6.6
+    #     if not isinstance(optimizers, list):
+    #         optimizers = [optimizers]
+    #     for optimizer in optimizers:
+    #         update_learning_rate(optimizer, lr)
+    
     def train(self) -> None:
         """
         Update policy using the currently gathered rollout buffer.
         """
         global old_model
         if old_model == None:
-            old_model = MaskablePPO.load(self.old_model_name, env=self.env)
+            old_model = MaskablePPO.load(self.old_model_path, env=self.env)
             old_model.policy.set_training_mode(False)
 
-        global dvn_model
-        if dvn_model == None:
-            dvn_model = DVNNetwork(self.old_model_name).to('cuda')
-            dvn_model.load_state_dict(th.load(self.dvn_model_name))
-            dvn_model.eval()
+        global dvn_value_model
+        if dvn_value_model == None and self.dvn_value_model_path != None:
+            dvn_value_model = DVNNetwork(self.old_model_path).to('cuda')
+            dvn_value_model.load_state_dict(th.load(self.dvn_value_model_path))
+            dvn_value_model.eval()
+
+        global vppo_value_model
+        if vppo_value_model == None and self.vppo_value_model_path != None:
+            vppo_value_model = MaskablePPO.load(self.vppo_value_model_path, env=self.env)
+            vppo_value_model.policy.set_training_mode(False)
 
         # Switch to train mode (this affects batch norm / dropout)
         self.policy.set_training_mode(True)
         old_model.policy.set_training_mode(False)
-        dvn_model.eval()
+        dvn_value_model.eval()
+        vppo_value_model.policy.set_training_mode(False)
         # Update optimizer learning rate
         self._update_learning_rate(self.policy.optimizer)
         # Compute current clip range
@@ -376,16 +403,26 @@ class TRMaskablePPO(OnPolicyAlgorithm):
                 ratio = th.exp(log_prob - rollout_data.old_log_prob)
 
                 # Old value regularization term
-                prob = self.policy.get_distribution(rollout_data.observations, rollout_data.action_masks).distribution.probs
+                probs = self.policy.get_distribution(rollout_data.observations, rollout_data.action_masks).distribution.probs
                 with th.no_grad():
-                    last_stage_prob = old_model.policy.get_distribution(rollout_data.observations, rollout_data.action_masks).distribution.probs
-                    last_stage_values = dvn_model(rollout_data.observations)
+                    if self.dvn_value_model_path != None:
+                        last_stage_values = dvn_value_model(rollout_data.observations)  # shape: (batchsize, 1)
+                    elif self.vppo_value_model_path != None:
+                        last_stage_values = vppo_value_model.policy.predict_values(rollout_data.observations)
+                        
                     delta_value = rollout_data.returns.unsqueeze(dim=-1) - last_stage_values
-                    lambd = th.mean(delta_value) + 3e-3
-                    lambd = th.clip(lambd, min=-0.1, max=0) * (-50)
-                transfer_regularization = lambd * F.mse_loss(prob, last_stage_prob)
-                lambds.append(lambd.item())
-                clip_range = 0.008 + 0.03 * lambd.item()
+                    lambd = th.mean(delta_value).item() + 3e-3
+                    lambd = np.clip(lambd, a_min=-0.5, a_max=0) * -10
+                    lambd = lambd.item()
+                    clip_range = 0.002 + 0.003 * self._current_progress_remaining + 0.12 * lambd
+                lambds.append(lambd)
+
+                if lambd > 0:
+                    with th.no_grad():
+                        last_stage_probs = old_model.policy.get_distribution(rollout_data.observations, rollout_data.action_masks).distribution.probs
+                    transfer_regularization = lambd * F.mse_loss(probs, last_stage_probs)
+                else:
+                    transfer_regularization = 0
 
                 # clipped surrogate loss
                 policy_loss_1 = advantages * ratio
