@@ -383,11 +383,11 @@ class TRMaskablePPOMultiPolicy(OnPolicyAlgorithm):
                     last_stage_values = value_model.policy.predict_values(rollout_data.observations)
                     delta_value = rollout_data.returns.unsqueeze(dim=-1) - last_stage_values
                     lambd = th.mean(delta_value).item() + 3e-3
-                    lambd = np.clip(lambd, a_min=-0.5, a_max=0) * -10
+                    lambd = np.clip(lambd, a_min=-0.5, a_max=0) * -66
                     lambd = lambd.item()
-                    clip_range = 0.01 + 0.02 * self._current_progress_remaining + 0.12 * lambd
+                    clip_range = 0.01 + 0.02 * self._current_progress_remaining + 0.012 * lambd
                 transfer_regularization = lambd * F.mse_loss(prob, last_stage_prob)
-                lambds.append(lambd.item())
+                lambds.append(lambd)
 
                 # clipped surrogate loss
                 policy_loss_1 = advantages * ratio
