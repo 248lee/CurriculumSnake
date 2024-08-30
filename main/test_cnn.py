@@ -91,7 +91,7 @@ total_reward = 0
 total_score = 0
 min_score = 1e9
 max_score = 0
-terminal_length_distrib = np.zeros(443)
+terminal_length_distrib = np.zeros(442)
 for episode in range(NUM_EPISODE):
     obs, _ = env.reset(9487, None)
     episode_reward = 0
@@ -189,7 +189,7 @@ for episode in range(NUM_EPISODE):
     if episode_score > max_score:
         max_score = episode_score
     
-    snake_size = info["snake_size"] + 1
+    snake_size = info["snake_size"]
     print(f"Episode {episode + 1}: Reward Sum: {episode_reward:.4f}, Score: {episode_score}, Total Steps: {num_step}, Snake Size: {snake_size}")
     terminal_length_distrib[snake_size] += 1
     total_reward += episode_reward
@@ -201,5 +201,5 @@ env.close()
 print(f"=================== Summary ==================")
 print(f"Average Score: {total_score / NUM_EPISODE}, Min Score: {min_score}, Max Score: {max_score}, Average reward: {total_reward / NUM_EPISODE}")
 print(terminal_length_distrib)
-plt.bar(range(3, 443), terminal_length_distrib[3:443])
+plt.bar(range(442), terminal_length_distrib)
 plt.show()
