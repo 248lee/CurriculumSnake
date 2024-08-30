@@ -377,7 +377,6 @@ class TRMaskablePPOMultiPolicy(OnPolicyAlgorithm):
                 ratio = th.exp(log_prob - rollout_data.old_log_prob)
 
                 # Old value regularization term
-                prob = self.policy.get_distribution(rollout_data.observations, rollout_data.action_masks).distribution.probs
                 with th.no_grad():
                     last_stage_prob = mc_policy.get_distributions(rollout_data.observations, rollout_data.action_masks).distribution.probs
                     last_stage_values = value_model.policy.predict_values(rollout_data.observations)
@@ -385,8 +384,12 @@ class TRMaskablePPOMultiPolicy(OnPolicyAlgorithm):
                     lambd = th.mean(delta_value).item() + 3e-3
                     lambd = np.clip(lambd, a_min=-0.5, a_max=0) * -66
                     lambd = lambd.item()
-                    clip_range = 0.01 + 0.02 * self._current_progress_remaining + 0.012 * lambd
-                transfer_regularization = lambd * F.mse_loss(prob, last_stage_prob)
+                    clip_range = 0.05 + 0.1 * self._current_progress_remaining + 0.03 * lambd
+                if lambd > 0:
+                    prob = self.policy.get_distribution(rollout_data.observations, rollout_data.action_masks).distribution.probs
+                    transfer_regularization = lambd * F.mse_loss(prob, last_stage_prob)
+                else:
+                    transfer_regularization = 0
                 lambds.append(lambd)
 
                 # clipped surrogate loss
