@@ -26,7 +26,7 @@ if __name__ == "__main__":
 
     update_interval = 0.15
     start_time = time.time()
-    recording_path = "recordings/len441_2024_08_30_13_59_52.obj"
+    recording_path = "recordings/len441_2024_09_01_09_59_47.obj"
     with open(recording_path, 'rb') as file:
         recording = pickle.load(file)
         snake_record = recording['snake_record']

@@ -100,14 +100,14 @@ class SnakeEnv(gym.Env):
         else:
             # Give a tiny reward/penalty to the agent based on whether it is heading towards the food or not.
             # Not competing with game over penalty or the food eaten reward.
-            if np.linalg.norm(info["snake_head_pos"] - info["food_pos"]) < np.linalg.norm(info["prev_snake_head_pos"] - info["food_pos"]):
-                reward = 2 / info["snake_size"]
+            # if np.linalg.norm(info["snake_head_pos"] - info["food_pos"]) < np.linalg.norm(info["prev_snake_head_pos"] - info["food_pos"]):
+            #     reward = 2 / info["snake_size"]
+            # else:
+            #     reward = -2.4 / info["snake_size"]
+            if info['snake_size'] >= 80:
+                reward = -self.reward_step_counter * 0.0001  # if the snake is long enough, it shouldn't get step reward
             else:
-                reward = -2.4 / info["snake_size"]
-            if info['snake_size'] >= 100:
-                reward = -self.reward_step_counter * 0.00005  # if the snake is long enough, it shouldn't get step reward
-            else:
-                reward = reward * 0.1
+                reward = -self.reward_step_counter * 0.0005
 
         # max_score: 72 + 14.1 = 86.1
         # min_score: -14.1
