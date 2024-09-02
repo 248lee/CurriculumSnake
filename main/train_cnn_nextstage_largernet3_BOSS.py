@@ -17,7 +17,7 @@ if torch.backends.mps.is_available():
 else:
     NUM_ENV = 32
 LOG_DIR = "logs"
-ExperimentName = "snake_ob_BOSS_please_success_more400states"
+ExperimentName = "snake_ob_BOSS_more430states_hard_punishment"
 
 os.makedirs(LOG_DIR, exist_ok=True)
 

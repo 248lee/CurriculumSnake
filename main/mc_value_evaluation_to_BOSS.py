@@ -89,7 +89,7 @@ def main():
         if torch.backends.mps.is_available():
             save_dir = "trained_models_cnn_mps"
         else:
-            save_dir = "trained_models_cnn"
+            save_dir = "trained_models_cnn/point985"
         os.makedirs(save_dir, exist_ok=True)
 
         checkpoint_interval = 15625 # checkpoint_interval * num_envs = total_steps_per_checkpoint

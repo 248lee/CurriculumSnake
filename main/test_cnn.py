@@ -19,7 +19,7 @@ IS_RECORDING = False
 if torch.backends.mps.is_available():
     MODEL_PATH = r"trained_models_cnn_mps/ppo_snake_final"
 else:
-    MODEL_PATH = r"trained_models_cnn/snake_ob_BOSS_please_success_larger_bslambd_190000000_steps.zip"
+    MODEL_PATH = r"trained_models_cnn/snake_ob_BOSS_more430states_hard_punishment.zip"
 
 NUM_EPISODE = 300
 
@@ -119,7 +119,7 @@ for episode in range(NUM_EPISODE):
         #         env.save_state()
         if not IS_MC:
             model.policy.set_training_mode(False)
-            action, _ = model.predict(obs, action_masks=env.get_action_mask())
+            action, _ = model.predict(obs, action_masks=env.get_action_mask(), deterministic=True)
         else:
             action = model.predict_for_ndarray(obs, action_masks=env.get_action_mask())
             action = action[0]
