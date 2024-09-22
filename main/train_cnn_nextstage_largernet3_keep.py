@@ -17,7 +17,7 @@ if torch.backends.mps.is_available():
 else:
     NUM_ENV = 32
 LOG_DIR = "logs"
-ExperimentName = "snake21_len350max441"
+ExperimentName = "snake_ob_keep3"
 
 os.makedirs(LOG_DIR, exist_ok=True)
 
@@ -49,7 +49,7 @@ def make_env(seed=0):
             "len366_state_2024_08_15_08_48_32.obj",
             "len369_state_2024_08_15_08_49_35.obj",
         ]
-        env = SnakeEnv(seed=seed, length=state_name_list, max_length=None, is_grow=True, silent_mode=True)
+        env = SnakeEnv(seed=seed, length=3, max_length=None, is_grow=True, silent_mode=True)
         env = ActionMasker(env, SnakeEnv.get_action_mask)
         env = Monitor(env)
         env.seed(seed)
@@ -86,14 +86,15 @@ def main():
             # tensorboard_log=LOG_DIR
         )
     else:
-        lr_schedule = linear_schedule(2.5e-4, 2.5e-6)
-        clip_range_schedule = linear_schedule(0.10, 0.002)
+        lr_schedule = linear_schedule(1e-5, 2.5e-6)
+        clip_range_schedule = linear_schedule(0.02, 0.002)
+        from gamma import gamma
         custom_objects = {
         "learning_rate": lr_schedule,
-        "gamma": 0.985,
+        "gamma": gamma,
         "clip_range": clip_range_schedule
         }
-        model = MaskablePPO.load("trained_models_cnn/snake21_len280_max380_180000000_steps", env=env,custom_objects=custom_objects)
+        model = MaskablePPO.load("trained_models_cnn/snake_ob_BOSS_more430states_hard_punishment", env=env,custom_objects=custom_objects)
 
     # Set the save directory
     if torch.backends.mps.is_available():
@@ -110,7 +111,7 @@ def main():
     log_file_path = os.path.join(save_dir, "training_log.txt")
 
     model.learn(
-        total_timesteps=int(130000000),
+        total_timesteps=int(20000000),
         callback=[checkpoint_callback],
         reset_num_timesteps=True,
         tb_log_name=ExperimentName,

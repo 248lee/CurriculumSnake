@@ -19,7 +19,7 @@ if torch.backends.mps.is_available():
 else:
     NUM_ENV = 32
 LOG_DIR = "logs"
-ExperimentName = "snake_ob_BOSS_please_lower"
+ExperimentName = "snake_ob_BOSS_please_lower2"
 
 os.makedirs(LOG_DIR, exist_ok=True)
 
@@ -82,7 +82,7 @@ def main():
         )
     else:
         lr_schedule = linear_schedule(2.5e-4, 2.5e-6)
-        clip_range_schedule = linear_schedule(0.16, 0.01)
+        clip_range_schedule = linear_schedule(0.05, 0.01)
         # clip_range_schedule = linear_schedule(0.150, 0.025)
         import torch as th
         from network_structures import CustomFeatureExtractorCNN
@@ -125,7 +125,7 @@ def main():
     log_file_path = os.path.join(save_dir, "training_log.txt")
 
     model.learn(
-        total_timesteps=int(200000000),
+        total_timesteps=int(1000000000),
         callback=[checkpoint_callback],
         tb_log_name=ExperimentName,
         progress_bar=True

@@ -19,9 +19,9 @@ IS_RECORDING = False
 if torch.backends.mps.is_available():
     MODEL_PATH = r"trained_models_cnn_mps/ppo_snake_final"
 else:
-    MODEL_PATH = r"trained_models_cnn/snake_ob_BOSS_more430states_hard_punishment.zip"
+    MODEL_PATH = r"trained_models_cnn/snake_ob_keep3_16000000_steps.zip"
 
-NUM_EPISODE = 300
+NUM_EPISODE = 1000
 
 RENDER = False
 FRAME_DELAY = 0.01 # 0.01 fast, 0.05 slow
@@ -221,5 +221,10 @@ env.close()
 print(f"=================== Summary ==================")
 print(f"Average Score: {total_score / NUM_EPISODE}, Min Score: {min_score}, Max Score: {max_score}, Average reward: {total_reward / NUM_EPISODE}")
 print(terminal_length_distrib)
+
+os.makedirs("results", exist_ok=True)
+with open("results/exp1_" + time.strftime('%Y_%m_%d_%H_%M_%S',time.localtime(time.time())) + '.obj', 'wb') as file:
+    pickle.dump(terminal_length_distrib, file)
+
 plt.bar(range(442), terminal_length_distrib)
 plt.show()
