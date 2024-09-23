@@ -1,6 +1,7 @@
 This repository is forked from https://github.com/linyiLYi/snake-ai
 # Multi-Coach Snake AI
 <img src="Snake_win.png">
+
 ## Introduction
 This repository implements the multi-coach algorithm, which originates from one of my capstone projects in NCHU.
 The agent trained by this algorithm is able to play 21x21 Snake Game and has a chance to achieve the max length of snake.
