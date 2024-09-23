@@ -65,6 +65,7 @@ if __name__ == "__main__":
             game.draw_welcome_screen()
 
         if game_state == "game_over":
+            time.sleep(3)
             game.draw_game_over_screen()
             i = 0
 
