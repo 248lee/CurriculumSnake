@@ -13,9 +13,11 @@ Original Report (pdf):
 ## Requirements
 * python 3.10.13: This project is only tested on python 3.10.13 with a conda environment in Ubuntu 20.04 and Ubuntu 22.04.
 
-* ```pip install stable-baselines3[extra]```: This module implements the core part of reinforcement-learning-algorithms. We use the PPO in this project. By the way, the ```[extra]``` flag helps install all other modules good for the training process, including Tensorboard, tqdm, etc.
+* ```pip install stable-baselines3[extra]```: This module implements the core part of reinforcement-learning-algorithms. By the way, the ```[extra]``` flag helps install all other modules good for the training process, including Tensorboard, tqdm, etc.
 
-* ```pip install sb3-contrib```: We use the MaskablePPO of this module for part of training process.
+* ```pip install sb3-contrib```: We used the MaskablePPO of this module for part of the training process.
+
+* ```pip install matplotlib```: This module plots the charts of our results.
 
 ## How to Test the Snake Game
 1. ```cd main```
