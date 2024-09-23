@@ -1,10 +1,13 @@
 This repository is forked from https://github.com/linyiLYi/snake-ai
 # Multi-Coach Snake AI
 ## Introduction
+![Imgur Image](https://imgur.com/a/WJcT7og.jpg)
+
 This repository implements the multi-coach algorithm, which originates from one of my capstone projects in NCHU.
 The agent trained by this algorithm is able to play 21x21 Snake Game and has a chance to achieve the max length of snake.
 
-Demo Video: 
+Demo Video: https://www.youtube.com/watch?v=3e3IhCKUG1Y
+
 Original Report (pdf):
 
 ## Requirements
@@ -15,6 +18,8 @@ Original Report (pdf):
 * ```pip install sb3-contrib```: We use the MaskablePPO of this module for part of training process.
 
 ## How to Test the Snake Game
+1. ```cd main```
+2. Run ```python test_cnn.py``` to watch the final agent play the Snake Game.
 
 ## How to Train the Final Agent
 1. ```cd main```

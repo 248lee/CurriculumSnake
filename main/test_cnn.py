@@ -19,11 +19,11 @@ IS_RECORDING = False
 if torch.backends.mps.is_available():
     MODEL_PATH = r"trained_models_cnn_mps/ppo_snake_final"
 else:
-    MODEL_PATH = r"trained_models_cnn/snake_ob_BOSS_more430states_hard_punishment.zip"
+    MODEL_PATH = r"trained_final_agent/snake_ob_BOSS_more430states_hard_punishment.zip"
 
 NUM_EPISODE = 300
 
-RENDER = False
+RENDER = True
 FRAME_DELAY = 0.01 # 0.01 fast, 0.05 slow
 ROUND_DELAY = 5
 VALUE_MODEL_NAMES = [
