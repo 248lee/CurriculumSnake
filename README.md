@@ -8,7 +8,7 @@ The agent trained by this algorithm is able to play 21x21 Snake Game and has a c
 
 Demo Video: https://www.youtube.com/watch?v=3e3IhCKUG1Y
 
-Original Report (pdf):
+Original Report (pdf): https://drive.google.com/drive/folders/1jGCupAlPWBmIID-8VBgR0Af4EO5YG3gi?usp=sharing
 
 ## Requirements
 * python 3.10.13: This project is only tested on python 3.10.13 with a conda environment in Ubuntu 20.04 and Ubuntu 22.04.
