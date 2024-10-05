@@ -20,7 +20,7 @@ from sb3_contrib.common.maskable.policies import MaskableActorCriticPolicy
 from sb3_contrib.common.maskable.utils import get_action_masks, is_masking_supported
 from sb3_contrib.ppo_mask.policies import CnnPolicy, MlpPolicy, MultiInputPolicy
 
-from mc_policy import MultiPolicy
+from ModelClasses.mc_policy import MultiPolicy
 from vppo import VMaskablePPO
 
 SelfMaskablePPO = TypeVar("SelfMaskablePPO", bound="MaskablePPO")

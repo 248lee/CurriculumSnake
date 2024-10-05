@@ -82,7 +82,7 @@ def main():
         lr_schedule = linear_schedule(2.5e-4, 7.5e-5)
         # clip_range_schedule = linear_schedule(0.150, 0.025)
         import torch as th
-        from network_structures import Stage2CustomFeatureExtractorCNN
+        from ModelClasses.network_structures import Stage2CustomFeatureExtractorCNN
         policy_kwargs = dict(
             features_extractor_class=Stage2CustomFeatureExtractorCNN,
             activation_fn=th.nn.ReLU,

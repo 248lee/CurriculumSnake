@@ -5,15 +5,15 @@ import random
 import torch
 from sb3_contrib import MaskablePPO
 
-from mc_policy import MultiPolicy
+from ModelClasses.mc_policy import MultiPolicy
 from snake_game_custom_wrapper_cnn import SnakeEnv
-from network_structures import DVNNetwork
+from ModelClasses.network_structures import DVNNetwork
 import numpy as np
 import matplotlib.pyplot as plt
 import torch as th
 import os
 
-IS_MC = False
+IS_MC = True
 IS_RECORDING = False
 
 if torch.backends.mps.is_available():

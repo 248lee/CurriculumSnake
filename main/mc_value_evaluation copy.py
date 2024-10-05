@@ -18,7 +18,7 @@ else:
     NUM_ENV = 50
 LOG_DIR = "logs"
 ExperimentName = "mc_value_evaluation_len180max268_in_BOSS"
-from network_structures import CustomFeatureExtractorCNN
+from ModelClasses.network_structures import CustomFeatureExtractorCNN
 
 os.makedirs(LOG_DIR, exist_ok=True)
 

@@ -7,7 +7,7 @@ from stable_baselines3.common.monitor import Monitor
 from stable_baselines3.common.vec_env import SubprocVecEnv
 from stable_baselines3.common.callbacks import CheckpointCallback
 
-from network_structures import Stage2CustomFeatureExtractorCNN
+from ModelClasses.network_structures import Stage2CustomFeatureExtractorCNN
 from trmaskppo import TRMaskablePPO
 from sb3_contrib import MaskablePPO
 from sb3_contrib.common.wrappers import ActionMasker
@@ -85,7 +85,7 @@ def main():
         clip_range_schedule = linear_schedule(0.16, 0.01)
         # clip_range_schedule = linear_schedule(0.150, 0.025)
         import torch as th
-        from network_structures import CustomFeatureExtractorCNN
+        from ModelClasses.network_structures import CustomFeatureExtractorCNN
         policy_kwargs = dict(
             features_extractor_class=Stage2CustomFeatureExtractorCNN,
             activation_fn=th.nn.ReLU,

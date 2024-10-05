@@ -18,7 +18,7 @@ else:
     NUM_ENV = 64
 LOG_DIR = "logs"
 ExperimentName = "mc_value_evaluation_mc_policy_in_BOSS"
-from network_structures import Stage2CustomFeatureExtractorCNN
+from ModelClasses.network_structures import Stage2CustomFeatureExtractorCNN
 
 os.makedirs(LOG_DIR, exist_ok=True)
 

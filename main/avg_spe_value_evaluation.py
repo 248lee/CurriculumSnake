@@ -5,7 +5,7 @@ import torch
 from sb3_contrib import MaskablePPO
 
 from snake_game_custom_wrapper_cnn import SnakeEnv
-from network_structures import DVNNetwork
+from ModelClasses.network_structures import DVNNetwork
 import numpy as np
 import matplotlib.pyplot as plt
 import torch as th

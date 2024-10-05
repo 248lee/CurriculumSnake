@@ -17,7 +17,7 @@ if torch.backends.mps.is_available():
 else:
     NUM_ENV = 64
 LOG_DIR = "logs"
-from network_structures import Stage2CustomFeatureExtractorCNN
+from ModelClasses.network_structures import Stage2CustomFeatureExtractorCNN
 
 os.makedirs(LOG_DIR, exist_ok=True)
 
