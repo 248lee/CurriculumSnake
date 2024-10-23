@@ -7,11 +7,10 @@ from stable_baselines3.common.monitor import Monitor
 from stable_baselines3.common.vec_env import SubprocVecEnv
 from stable_baselines3.common.callbacks import CheckpointCallback
 
-from trmaskppo import TRMaskablePPO
 from sb3_contrib import MaskablePPO
 from sb3_contrib.common.wrappers import ActionMasker
 
-from snake_game_custom_wrapper_cnn import SnakeEnv
+from Environment.snake_game_custom_wrapper_cnn import SnakeEnv
 
 if torch.backends.mps.is_available():
     NUM_ENV = 32 * 2
@@ -54,53 +53,34 @@ def main():
     # Create the Snake environment.
     env = SubprocVecEnv([make_env(seed=s) for s in seed_set])
 
-    if torch.backends.mps.is_available():
-        lr_schedule = linear_schedule(5e-4, 2.5e-6)
-        # clip_range_schedule = linear_schedule(0.150, 0.025)
-        # Instantiate a PPO agent using MPS (Metal Performance Shaders).
-        model = TRMaskablePPO(
-            "CnnPolicy",
-            # env,
-            # old_model_name="trained_models_cnn/snake_s1_len3_9000000_steps",
-            # dvn_model_name="trained_models_value/DVN_transfer_final.zip",
-            # device="mps",
-            # verbose=1,
-            # n_steps=2048,
-            # batch_size=512*8,
-            # n_epochs=4,
-            # gamma=0.94,
-            # learning_rate=lr_schedule,
-            # clip_range=clip_range_schedule,
-            # tensorboard_log=LOG_DIR
-        )
-    else:
-        lr_schedule = linear_schedule(2.5e-4, 2.5e-6)
-        clip_range_schedule = linear_schedule(0.15, 0.02)
-        # clip_range_schedule = linear_schedule(0.150, 0.025)
-        import torch as th
-        from ModelClasses.network_structures import CustomFeatureExtractorCNN
-        policy_kwargs = dict(
-            features_extractor_class=CustomFeatureExtractorCNN,
-            activation_fn=th.nn.ReLU,
-            net_arch=dict(pi=[256, 128], vf=[128])
-        )
-        # Instantiate a PPO agent using CUDA.
-        model = MaskablePPO(
-            "CnnPolicy",
-            env,
-            device="cuda",
-            verbose=1,
-            n_steps=2048,
-            batch_size=512,
-            n_epochs=4,
-            gamma=0.94,
-            learning_rate=lr_schedule,
-            clip_range=clip_range_schedule,
-            tensorboard_log=LOG_DIR,
-            policy_kwargs=policy_kwargs
-        )
+    
+    lr_schedule = linear_schedule(2.5e-4, 2.5e-6)
+    clip_range_schedule = linear_schedule(0.15, 0.02)
+    # clip_range_schedule = linear_schedule(0.150, 0.025)
+    import torch as th
+    from ModelClasses.network_structures import CustomFeatureExtractorCNN
+    policy_kwargs = dict(
+        features_extractor_class=CustomFeatureExtractorCNN,
+        activation_fn=th.nn.ReLU,
+        net_arch=dict(pi=[256, 128], vf=[128])
+    )
+    # Instantiate a PPO agent using CUDA.
+    model = MaskablePPO(
+        "CnnPolicy",
+        env,
+        device="cuda",
+        verbose=1,
+        n_steps=2048,
+        batch_size=512,
+        n_epochs=4,
+        gamma=0.94,
+        learning_rate=lr_schedule,
+        clip_range=clip_range_schedule,
+        tensorboard_log=LOG_DIR,
+        policy_kwargs=policy_kwargs
+    )
 
-        model.save('random_feature_extractor.zip')
+    model.save('random_feature_extractor.zip')
 
     # Set the save directory
     if torch.backends.mps.is_available():
