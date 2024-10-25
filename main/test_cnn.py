@@ -6,20 +6,17 @@ import torch
 from sb3_contrib import MaskablePPO
 
 from ModelClasses.mc_policy import MultiPolicy
-from snake_game_custom_wrapper_cnn import SnakeEnv
+from Environment.snake_game_custom_wrapper_cnn import SnakeEnv
 from ModelClasses.network_structures import DVNNetwork
 import numpy as np
 import matplotlib.pyplot as plt
 import torch as th
 import os
 
-IS_MC = True
+IS_MC = False
 IS_RECORDING = False
 
-if torch.backends.mps.is_available():
-    MODEL_PATH = r"trained_models_cnn_mps/ppo_snake_final"
-else:
-    MODEL_PATH = r"trained_final_agent/snake_ob_BOSS_more430states_hard_punishment.zip"
+MODEL_PATH = r"trained_models_cnn/snake_pure_len3_max130.zip"
 
 NUM_EPISODE = 300
 
